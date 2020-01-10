@@ -24,6 +24,7 @@
     "@nestjs/core": "^6.0.0",
     "@nestjs/passport": "^6.1.1",
     "@nestjs/platform-express": "^6.0.0",
+    "bcrypt": "^3.0.7",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.12",
