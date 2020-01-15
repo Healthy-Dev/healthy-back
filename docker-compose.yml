@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:10
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=healthy-dev
+      - POSTGRES_USER=healthy
+      - POSTGRES_PASSWORD=healthydev
+
+  core:
+    build: .
+    restart: always
+    command: ["node", "dist/main.js"]
+    depends_on:
+      - db
+    ports:
+      - "8100:3000"
+
+volumes:
+  db_data:
+    driver: local
