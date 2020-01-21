@@ -7,6 +7,9 @@ export class UsersService {
     private readonly users: User[];
 
     constructor() {
+
+      // test users, until db is connected
+
         this.users = [
             {
                 userId: 1,
