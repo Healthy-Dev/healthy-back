@@ -7,7 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UsersModule, DatabaseModule, ConfigModule.forRoot({envFilePath: 'key.env'})],
+  imports: [AuthModule, UsersModule, ConfigModule.forRoot({envFilePath: 'key.env'})],
   controllers: [AppController],
   providers: [AppService],
 })
