@@ -26,12 +26,15 @@
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/passport": "^6.1.1",
     "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/typeorm": "^6.2.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.17.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
-    "rxjs": "^6.3.3"
+    "rxjs": "^6.3.3",
+    "typeorm": "^0.2.22"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.0.0",
