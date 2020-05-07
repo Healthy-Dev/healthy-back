@@ -1,7 +1,8 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModuleOptions, TypeOrmModule } from '@nestjs/typeorm';
 
+const typeDb: any = process.env.TYPEORM_TYPE;
 export const typeOrmConfig: TypeOrmModuleOptions = {
-    type: 'postgres',
+    type: typeDb,
     host: process.env.POSTGRES_HOSTNAME,
     port: parseInt(process.env.POSTGRES_PORT, 10),
     username: process.env.POSTGRES_USER,
