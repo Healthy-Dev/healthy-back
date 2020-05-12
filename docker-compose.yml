@@ -6,8 +6,10 @@ services:
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
-    env_file:
-      - '.env'
+    environment:
+      - POSTGRES_DB=healthy-dev
+      - POSTGRES_USER=healthy
+      - POSTGRES_PASSWORD=healthydev
     ports:
       - '5432:5432'
   core:
