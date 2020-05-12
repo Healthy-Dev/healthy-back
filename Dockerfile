@@ -1,28 +1,32 @@
 # Sourced from https://github.com/Saluki/nestjs-template/blob/master/Dockerfile
+# https://blog.logrocket.com/containerized-development-nestjs-docker/
 
-FROM node:12-alpine as builder
+FROM node:12-alpine as development
 
-ENV NODE_ENV build
+WORKDIR /usr/src/app
 
-USER node
-WORKDIR /home/node
+COPY package.json ./
+COPY yarn.lock ./
 
-COPY . /home/node
+RUN yarn install --production false
 
-RUN yarn install --frozen-lockfile \
-    && npm run build
+COPY . .
 
-# ---
+RUN yarn run build
 
-FROM node:12-alpine
+# ---------------------------------
 
-ENV NODE_ENV production
+FROM node:12-alpine as production
 
-USER node
-WORKDIR /home/node
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-COPY --from=builder /home/node/package*.json /home/node/
-COPY --from=builder /home/node/dist/ /home/node/dist/
+WORKDIR /usr/src/app
 
 RUN yarn install --frozen-lockfile
 
+COPY . .
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]
