@@ -12,7 +12,7 @@ export class CardRepository extends Repository<Card> {
                 search: `%${search}%`,
             });
         }
-        query.orderBy('card.id', 'ASC');
+        query.orderBy('card.id', 'DESC');
         query.skip(offset);
         query.take(limit);
         const cards = query.getRawMany();
