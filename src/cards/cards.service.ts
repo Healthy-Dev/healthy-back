@@ -9,7 +9,7 @@ export class CardsService {
     constructor(
         @InjectRepository(Card) private cardRepository: CardRepository,
     ) {}
-    async createCards(createCardsDto: CreateCardDto): Promise<Card> {
-        return this.cardRepository.createCards(createCardsDto);
+    async createCards(createCardsDto: CreateCardDto, file): Promise<Card> {
+        return this.cardRepository.createCards(createCardsDto, file);
     }
 }

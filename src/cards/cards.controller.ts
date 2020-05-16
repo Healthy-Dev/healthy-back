@@ -19,13 +19,8 @@ export class CardsController {
 
   @Post('v1/cards')
   @UsePipes(ValidationPipe)
-  createCards(@Body() createCardsDto: CreateCardDto): Promise<Card> {
-    return this.cardsService.createCards(createCardsDto);
-  }
-
-  @Post('v1/cards/upload')
   @UseInterceptors(FileInterceptor('image'))
-  uploadImage(@UploadedFile() file) {
-    console.log(file);
+  createCards(@Body() createCardsDto: CreateCardDto, @UploadedFile() file): Promise<Card> {
+    return this.cardsService.createCards(createCardsDto, file);
   }
 }

@@ -4,7 +4,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
-  async createCards(createCardDto: CreateCardDto): Promise<Card> {
+  async createCards(createCardDto: CreateCardDto, file): Promise<Card> {
     const { title, description, photo, externalUrl } = createCardDto;
 
     const card = new Card();
