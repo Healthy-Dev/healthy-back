@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 services:
   db:
@@ -10,15 +10,23 @@ services:
       - POSTGRES_DB=healthy-dev
       - POSTGRES_USER=healthy
       - POSTGRES_PASSWORD=healthydev
-
+    ports:
+      - '5432:5432'
   core:
-    build: .
+    env_file:
+      - '.env'
+    build:
+      context: .
+      target: 'development'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     restart: always
-    command: ["node", "dist/main.js"]
+    command: ['yarn', 'start:dev']
     depends_on:
       - db
     ports:
-      - "8100:3000"
+      - '8100:3000'
 
 volumes:
   db_data:
