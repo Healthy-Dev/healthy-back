@@ -20,7 +20,7 @@ export class CardsController {
   @Post('v1/cards')
   @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('image'))
-  createCards(@Body() createCardsDto: CreateCardDto, @UploadedFile() file: any): Promise<Card> {
+  createCards(@Body() createCardsDto: CreateCardDto, @UploadedFile() file?: any): Promise<Card> {
     return this.cardsService.createCards(createCardsDto, file);
   }
 }

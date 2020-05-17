@@ -8,16 +8,32 @@ const cloudinary = require('cloudinary').v2;
 
 @Injectable()
 export class CardsService {
-    constructor(
-        @InjectRepository(Card) private cardRepository: CardRepository,
-    ) {}
-    async createCards(createCardsDto: CreateCardDto, file: any): Promise<Card> {
-        console.log(file);
-        await cloudinary.uploader.upload(file.originalname, (error: any, response: any) => {
-            console.log(error);
-            console.log(response)
-        })
+   constructor(
+      @InjectRepository(Card) private cardRepository: CardRepository,
+   ) {}
+   async createCards(
+      createCardsDto: CreateCardDto,
+      file: any = 'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg',
+   ): Promise<Card> {
+      let photoUrl: string = '';
+      if (file.buffer) {
+         const photoInBase64 = file.buffer.toString('base64');
+         const type = file.mimetype;
+         await cloudinary.uploader.upload(
+            `data:${type};base64,${photoInBase64}`,
+            (error: any, response: any) => {
+               if (error) {
+                  throw error;
+               } else {
+                  photoUrl = response.url;
+               }
+            },
+         );
+      }
 
-        return this.cardRepository.createCards(createCardsDto, file);
-    }
+      return this.cardRepository.createCards(
+         createCardsDto,
+         photoUrl ? photoUrl : file,
+      );
+   }
 }
