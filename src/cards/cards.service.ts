@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './card.entity';
 import { CardRepository } from './card.repository';
+import { GetCardsFilterDto } from './dto/get-cards.dto';
+import { CardPreviewDto } from './dto/card-preview.dto';
 import { CreateCardDto } from './dto/create-card.dto';
 
 const cloudinary = require('cloudinary').v2;
@@ -11,6 +13,9 @@ export class CardsService {
    constructor(
       @InjectRepository(Card) private cardRepository: CardRepository,
    ) {}
+   async getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
+     return this.cardRepository.getCards(filterDto);
+   }
    async createCards(
       createCardsDto: CreateCardDto,
       file: any = 'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg',
@@ -35,5 +40,4 @@ export class CardsService {
          createCardsDto,
          photoUrl ? photoUrl : file,
       );
-   }
 }
