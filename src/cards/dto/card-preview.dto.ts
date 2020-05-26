@@ -1,5 +1,5 @@
 export class CardPreviewDto {
-    id: string;
+    id: number;
     title: string;
-    photo?: number;
+    photo?: string;
 }
