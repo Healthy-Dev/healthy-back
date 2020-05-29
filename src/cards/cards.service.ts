@@ -16,7 +16,7 @@ export class CardsService {
 
     if (!cardFound) {
       throw new NotFoundException(
-        `Healthy Dev no encontró nada con el id ${id}, que esto no te impida seguir haciendo vida sana!`,
+        `Healthy Dev no encontró nada con el id ${id}`,
       );
     } else {
       return cardFound;
