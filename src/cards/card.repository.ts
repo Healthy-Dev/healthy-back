@@ -22,7 +22,7 @@ export class CardRepository extends Repository<Card> {
     return headerCards;
   }
 
-  async createCards(createCardDto: CreateCardDto, file: string): Promise<{}> {
+  async createCards(createCardDto: CreateCardDto, file: string): Promise<{id: number}> {
     const { title, description, externalUrl } = createCardDto;
     const card = new Card();
     card.title = title;

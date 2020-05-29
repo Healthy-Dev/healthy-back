@@ -11,15 +11,15 @@ const cloudinary = require('cloudinary').v2;
 @Injectable()
 export class CardsService {
   constructor(@InjectRepository(Card) private cardRepository: CardRepository) {}
+  
   async getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return this.cardRepository.getCards(filterDto);
   }
-  async createCards(
-    createCardsDto: CreateCardDto,
-    file: any = 'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg',
-  ): Promise<{}> {
-    let photoUrl: string = '';
-    if (file.buffer) {
+
+  async createCards(createCardsDto: CreateCardDto, file: any): Promise<{}> {
+    let photoUrl: string =
+      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
+    if (file) {
       const photoInBase64 = file.buffer.toString('base64');
       const imageType = file.mimetype;
       await cloudinary.uploader.upload(
@@ -41,9 +41,6 @@ export class CardsService {
         },
       );
     }
-    return this.cardRepository.createCards(
-      createCardsDto,
-      photoUrl ? photoUrl : file,
-    );
+    return this.cardRepository.createCards(createCardsDto, photoUrl);
   }
 }
