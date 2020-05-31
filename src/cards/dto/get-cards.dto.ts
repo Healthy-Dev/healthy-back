@@ -12,6 +12,5 @@ export class GetCardsFilterDto {
   offset: number = 0;
 
   @IsOptional()
-  @IsNotEmpty({ message: 'La cadena a buscar no puede estar vacía.' })
   search: string;
 }
