@@ -32,7 +32,7 @@ export class CardsController {
   createCards(
     @Body() createCardsDto: CreateCardDto,
     @UploadedFile() file?: any,
-  ): Promise<{}> {
+  ): Promise<{id: number}> {
     return this.cardsService.createCards(createCardsDto, file);
   }
 }

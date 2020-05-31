@@ -1,10 +1,10 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateCardDto {
-   @IsNotEmpty()
+   @IsNotEmpty({message: "Healthy Dev te pide que no dejes el título vacío"})
    title: string;
 
-   @IsNotEmpty()
+   @IsNotEmpty({message: "Healthy Dev te pide que no dejes la descripción vacía."})
    description: string;
 
    @IsOptional()

@@ -16,7 +16,7 @@ export class CardsService {
     return this.cardRepository.getCards(filterDto);
   }
 
-  async createCards(createCardsDto: CreateCardDto, file: any): Promise<{}> {
+  async createCards(createCardsDto: CreateCardDto, file: any): Promise<{id: number}> {
     let photoUrl: string =
       'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
     if (file) {
