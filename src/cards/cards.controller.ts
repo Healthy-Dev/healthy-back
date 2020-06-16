@@ -1,13 +1,15 @@
 import {
-  Controller,
-  ValidationPipe,
-  Query,
-  Get,
-  Post,
   Body,
-  UseInterceptors,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
   UploadedFile,
+  UseInterceptors,
   UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -26,6 +28,11 @@ export class CardsController {
     return this.cardsService.getCards(filterDto);
   }
 
+  @Get('v1/cards/:id')
+  getCardsById(@Param('id', ParseIntPipe) id: number): Promise<Card> {
+    return this.cardsService.getCardsById(id);
+  }
+  
   @Post('v1/cards')
   @UsePipes(ValidationPipe)
   @UseInterceptors(FileInterceptor('image'))
