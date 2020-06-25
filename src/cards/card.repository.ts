@@ -25,13 +25,13 @@ getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return headerCards;
   }
 
-  async createCards(createCardDto: CreateCardDto, file: string): Promise<{id: number}> {
+  async createCards(createCardDto: CreateCardDto, photoUrl: string): Promise<{id: number}> {
     const { title, description, externalUrl } = createCardDto;
     const card = new Card();
     card.title = title;
     card.description = description;
     card.externalUrl = externalUrl;
-    card.photo = file;
+    card.photo = photoUrl;
 
     await card.save();
 
