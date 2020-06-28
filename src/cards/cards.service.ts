@@ -28,14 +28,13 @@ export class CardsService {
     return cardFound;
   }
   
-  async createCards(createCardsDto: CreateCardDto, file: any): Promise<{id: number}> {
-    let photoUrl: string =
-      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
-    if (file) {
-      const photoInBase64 = file.buffer.toString('base64');
-      const imageType = file.mimetype;
+  async createCards(createCardsDto: CreateCardDto): Promise<{id: number}> {
+    let { photo } = createCardsDto;
+    let photoUrl =
+    'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
+    if (photo) {
       await cloudinary.uploader.upload(
-        `data:${imageType};base64,${photoInBase64}`,
+        `data:image/jpg;base64,${photo}`,
         {
           format: 'jpg',
           resource_type: 'image',
@@ -48,11 +47,10 @@ export class CardsService {
           if (error) {
             throw error;
           }
-
           photoUrl = response.url;
         },
       );
-    }
+    } 
     return this.cardRepository.createCards(createCardsDto, photoUrl);
   }
 }
