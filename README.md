@@ -27,7 +27,7 @@ $ npm run start:prod
 
 ## Documentación
 
-[a relative link](docs/Documentation.md)
+[Link a la documentación](docs/Documentation.md)
 
 ## Support
 
