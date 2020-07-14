@@ -27,6 +27,8 @@ $ npm run start:prod
 
 ## Documentación
 
+[a relative link](docs/Documentation.md)
+
 ## Support
 
 Contacta con la comunidad FrontEnd Cafe. https://twitter.com/FrontEndCafe
