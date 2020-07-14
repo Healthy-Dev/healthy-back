@@ -2,19 +2,30 @@
   Backend para HealthyDev
 </p>
 
-## Description
+## Descripción
 
  Api Rest para aplicación web HealthyDev.
 
-## Installation
+## Requerimientos
+
+NodeJs
+Docker
+PostgreSQL
+Cuenta en Cloudinary www.cloudinary.com
+
+## Instalación
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+## Iniciando la API
 
 ```bash
+
+# inicialización de docker
+$ docker-compose up --build
+
 # development
 $ npm run start
 
@@ -23,6 +34,34 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+### Configuracion
+
+```bash
+
+# información de la base de datos
+
+TYPEORM_HOST=db
+TYPEORM_CONNECTION=postgres
+TYPEORM_USERNAME= {{username de la db}}
+TYPEORM_PASSWORD= {{password de la db}}
+TYPEORM_DATABASE= {{nombre de la db}}
+TYPEORM_PORT= {{puerto de la db}}
+TYPEORM_SYNCHRONIZE=false
+TYPEORM_MIGRATIONS_RUN=true
+TYPEORM_ENTITIES=src/**/*.entity.ts
+TYPEORM_MIGRATIONS=src/migrations/*.ts
+TYPEORM_MIGRATIONS_DIR=src/migrations
+TYPEORM_LOGGING=true
+TYPEORM_LOGGER='file'
+
+# Las siguientes 3 variables se consiguen con la cuenta de cloudinary (solo para POST Cards)
+
+CLOUDINARY_USER=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
 ```
 
 ## Documentación
