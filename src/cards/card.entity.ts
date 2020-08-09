@@ -1,6 +1,16 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
 import { User } from 'src/users/user.entity';
 
+@Index('idx_card_search', ['title', 'description'], {})
 @Entity()
 export class Card extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -24,6 +34,9 @@ export class Card extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => User, creator => creator.username)
+  @ManyToOne(
+    type => User,
+    creator => creator.username,
+  )
   creator: User;
 }
