@@ -7,11 +7,11 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsEmail()
+  @IsEmail({}, { message: 'Healthy Dev te pide que ingreses un email válido' })
   email: string;
 
   @IsString({
-    message: 'Healthy Dev te pide que nombre de usuario sea alfabetico',
+    message: 'Healthy Dev te pide que nombre de usuario sea alfabético',
   })
   @Length(4, 20, {
     message:
