@@ -9,18 +9,38 @@ import { strict } from 'assert';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
+  async getUserByUsernameOrEmail(usernameOrEmail: string): Promise<User> {
+    const query = this.createQueryBuilder('user');
+    query.where('user.username = :usernameOrEmail', {
+      usernameOrEmail,
+    });
+    query.orWhere('user.email = :usernameOrEmail', {
+      usernameOrEmail,
+    });
+    const user = await query.getOne();
+    return user;
+  }
+
   async createUser(
     createUserDto: CreateUserDto,
     photoUrl: string,
   ): Promise<{ id: number }> {
-    const { email, username, password, name } = createUserDto;
+    const {
+      email,
+      username,
+      password,
+      name,
+      twitter,
+      instagram,
+    } = createUserDto;
     const user = new User();
     user.email = email;
     user.username = username;
     user.password = password;
     user.name = name;
+    user.twitter = twitter;
+    user.instagram = instagram;
     user.profilePhoto = photoUrl;
-
     try {
       await user.save();
     } catch (error) {

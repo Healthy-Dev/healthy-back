@@ -5,6 +5,7 @@ import { CardRepository } from './card.repository';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
 import { CardPreviewDto } from './dto/card-preview.dto';
 import { CreateCardDto } from './dto/create-card.dto';
+import { User } from '../users/user.entity';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -27,11 +28,14 @@ export class CardsService {
 
     return cardFound;
   }
-  
-  async createCards(createCardsDto: CreateCardDto): Promise<{id: number}> {
+
+  async createCards(
+    createCardsDto: CreateCardDto,
+    user: User,
+  ): Promise<{ id: number }> {
     let { photo } = createCardsDto;
     let photoUrl =
-    'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
+      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
     if (photo) {
       await cloudinary.uploader.upload(
         `data:image/jpg;base64,${photo}`,
@@ -50,7 +54,7 @@ export class CardsService {
           photoUrl = response.url;
         },
       );
-    } 
-    return this.cardRepository.createCards(createCardsDto, photoUrl);
+    }
+    return this.cardRepository.createCards(createCardsDto, user, photoUrl);
   }
 }

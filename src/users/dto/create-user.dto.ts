@@ -30,4 +30,10 @@ export class CreateUserDto {
 
   @IsOptional()
   profilePhoto: string;
+
+  @IsOptional()
+  twitter: string;
+
+  @IsOptional()
+  instagram: string;
 }

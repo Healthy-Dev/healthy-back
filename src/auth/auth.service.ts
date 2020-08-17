@@ -42,11 +42,9 @@ export class AuthService {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<string> {
     const { usernameOrEmail, password } = authCredentialsDto;
-    let user = await this.usersService.getUserByUsername(usernameOrEmail);
-    if (user && (await this.validatePassword(password, user.password))) {
-      return user.username;
-    }
-    user = await this.usersService.getUserByEmail(usernameOrEmail);
+    const user = await this.usersService.getUserByUsernameOrEmail(
+      usernameOrEmail,
+    );
     if (user && (await this.validatePassword(password, user.password))) {
       return user.username;
     }
