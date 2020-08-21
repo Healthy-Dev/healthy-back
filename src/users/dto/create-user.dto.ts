@@ -17,8 +17,9 @@ export class CreateUserDto {
     message:
       'Healthy Dev te pide que nombre de usuario posea entre 4 y 20 caracteres',
   })
-  @Matches(/^((?!@).)*$/, {
-    message: 'Healthy Dev te pide que el nombre de usuario no posea "@"',
+  @Matches(/^((?![\s@]).)*$/, {
+    message:
+      'Healthy Dev te pide que el nombre de usuario no posea "@" ni espacios',
   })
   username: string;
 

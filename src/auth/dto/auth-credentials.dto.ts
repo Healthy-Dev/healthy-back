@@ -1,11 +1,5 @@
 import { IsNotEmpty, Length } from 'class-validator';
-import {
-  MinLength,
-  IsString,
-  MaxLength,
-  Matches,
-  IsEmail,
-} from 'class-validator';
+import { IsString, Matches } from 'class-validator';
 
 export class AuthCredentialsDto {
   @IsNotEmpty()

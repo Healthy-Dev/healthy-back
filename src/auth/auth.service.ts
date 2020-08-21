@@ -15,15 +15,8 @@ export class AuthService {
 
   async signUp(createUserDto: CreateUserDto): Promise<{ id: number }> {
     const salt = await bcrypt.genSalt();
-    createUserDto.password = await this.hasPassword(
-      createUserDto.password,
-      salt,
-    );
+    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
     return this.usersService.createUser(createUserDto);
-  }
-
-  private hasPassword(password: string, salt: string): Promise<string> {
-    return bcrypt.hash(password, salt);
   }
 
   async signIn(
@@ -45,16 +38,9 @@ export class AuthService {
     const user = await this.usersService.getUserByUsernameOrEmail(
       usernameOrEmail,
     );
-    if (user && (await this.validatePassword(password, user.password))) {
+    if (user && (await await bcrypt.compare(password, user.password))) {
       return user.username;
     }
     return null;
-  }
-
-  async validatePassword(
-    password: string,
-    userPassword: string,
-  ): Promise<boolean> {
-    return await bcrypt.compare(password, userPassword);
   }
 }
