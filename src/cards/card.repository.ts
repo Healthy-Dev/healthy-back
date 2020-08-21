@@ -4,6 +4,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
 import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
+import { NotFoundException } from '@nestjs/common';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
@@ -41,5 +42,19 @@ export class CardRepository extends Repository<Card> {
     await card.save();
 
     return { id: card.id };
+  }
+
+  async getCardById(id: number): Promise<Card> {
+    const query = this.createQueryBuilder('card');
+    query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
+    query.leftJoin('card.creator', 'user');
+    query.where('card.id = :id', { id });
+    const card = await query.getOne();
+    if (!card) {
+      throw new NotFoundException(
+        `Healthy Dev no encontró nada con el id ${id}`,
+      );
+    }
+    return card;
   }
 }

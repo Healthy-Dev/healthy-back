@@ -17,16 +17,8 @@ export class CardsService {
     return this.cardRepository.getCards(filterDto);
   }
 
-  async getCardsById(id: number): Promise<Card> {
-    const cardFound = await this.cardRepository.findOne(id);
-
-    if (!cardFound) {
-      throw new NotFoundException(
-        `Healthy Dev no encontró nada con el id ${id}`,
-      );
-    }
-
-    return cardFound;
+  async getCardById(id: number): Promise<Card> {
+    return this.cardRepository.getCardById(id);
   }
 
   async createCards(

@@ -29,8 +29,8 @@ export class CardsController {
   }
 
   @Get('v1/cards/:id')
-  getCardsById(@Param('id', ParseIntPipe) id: number): Promise<Card> {
-    return this.cardsService.getCardsById(id);
+  getCardById(@Param('id', ParseIntPipe) id: number): Promise<Card> {
+    return this.cardsService.getCardById(id);
   }
 
   @Post('v1/cards')
