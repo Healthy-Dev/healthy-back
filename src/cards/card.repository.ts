@@ -40,7 +40,6 @@ export class CardRepository extends Repository<Card> {
     card.photo = photoUrl;
     card.creator = user;
     await card.save();
-
     return { id: card.id };
   }
 

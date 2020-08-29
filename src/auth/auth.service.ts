@@ -5,6 +5,7 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './strategy/jwt-payload.interface';
+import { NewPasswordDto } from './dto/new-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,5 +43,11 @@ export class AuthService {
       return user.username;
     }
     return null;
+  }
+
+  async setNewPassword(newPassword: NewPasswordDto, username: string): Promise<{ message: string }> {
+    const salt = await bcrypt.genSalt();
+    newPassword.password = await bcrypt.hash(newPassword.password, salt);
+    return this.usersService.setNewPassword(newPassword, username);
   }
 }

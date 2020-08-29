@@ -13,6 +13,9 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ValidationError } from 'class-validator';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { NewPasswordDto } from './dto/new-password.dto';
+import { GetUser } from './get-user.decorator';
+import { User } from 'src/users/user.entity';
 
 @Controller()
 export class AuthController {
@@ -39,5 +42,14 @@ export class AuthController {
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signIn(authCredentialsDto);
+  }
+
+  @Post('v1/auth/new-password')
+  @UseGuards(AuthGuard('jwt'))
+  public async setNewPassord(
+    @GetUser() {username}: User,
+    @Body() newPassword: NewPasswordDto
+  ): Promise<{ message: string }> {
+    return this.authService.setNewPassword(newPassword, username);
   }
 }

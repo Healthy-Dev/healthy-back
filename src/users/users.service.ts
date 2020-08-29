@@ -3,6 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { NewPasswordDto } from 'src/auth/dto/new-password.dto';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -45,5 +47,33 @@ export class UsersService {
       );
     }
     return this.userRepository.createUser(createUserDto, photoUrl);
+  }
+
+  async updateUser(updateData: UpdateUserDto, username: string): Promise<User>  {
+    let { profilePhoto } = updateData;
+    if (profilePhoto) {
+      await cloudinary.uploader.upload(
+        `data:image/jpg;base64,${profilePhoto}`,
+        {
+          format: 'jpg',
+          resource_type: 'image',
+          width: 500,
+          height: 500,
+          crop: 'limit',
+          background: '#03111F',
+        },
+        (error: any, response: any) => {
+          if (error) {
+            throw error;
+          }
+          profilePhoto = response.url;
+        },
+      );
+    }
+    return this.userRepository.updateUser(updateData, username)
+  }
+
+  async setNewPassword(newPassword: NewPasswordDto, username: string): Promise<{ message: string }> {
+    return this.userRepository.setNewPassword(newPassword, username);
   }
 }

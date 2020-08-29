@@ -6,6 +6,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { strict } from 'assert';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { NewPasswordDto } from 'src/auth/dto/new-password.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -62,5 +64,21 @@ export class UserRepository extends Repository<User> {
     }
 
     return { id: user.id };
+  }
+
+  async updateUser(updateData: UpdateUserDto, username: string): Promise<User> {
+    await this.update({ username }, updateData);
+    const profile = this.findOne({ username });
+    return profile;
+  }
+
+  async setNewPassword(
+    newPassword: NewPasswordDto,
+    username: string,
+  ): Promise<{ message: string }> {
+    await this.update({ username }, newPassword);
+    return {
+      message: 'Contraseña Cambiada con éxito.'
+    }
   }
 }
