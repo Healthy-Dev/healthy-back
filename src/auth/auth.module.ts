@@ -10,15 +10,14 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
       signOptions: { expiresIn: process.env.JWT_EXPIRES },
     }),
-    ConfigModule,
   ],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
   controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
