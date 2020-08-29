@@ -9,7 +9,6 @@ export class AuthCredentialsDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(8, 20)
   @Matches(/^(?!.*\s)(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,250}$/)
   password: string;
 }
