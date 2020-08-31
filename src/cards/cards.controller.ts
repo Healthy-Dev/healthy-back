@@ -15,7 +15,7 @@ import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
 import { CardPreviewDto } from './dto/card-preview.dto';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 @Controller()

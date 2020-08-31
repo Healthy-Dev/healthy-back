@@ -13,7 +13,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { GetUser } from './get-user.decorator';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 
 @Controller()
 export class AuthController {

@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { NewPasswordDto } from 'src/auth/dto/new-password.dto';
+import { NewPasswordDto } from '../auth/dto/new-password.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
