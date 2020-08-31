@@ -79,13 +79,13 @@ export class UsersService {
       let imagePublicId = '';
       strUrl.forEach(item => {
         if(item.match(/(.*)\.jpg/gm)){
-          imagePublicId = item;
+          imagePublicId = item.split('.')[0];
         }
       })
       if(imagePublicId !== 'placeholder.jpg') {
         await cloudinary.uploader.destroy(imagePublicId, {resource_type: 'image'}, (res: any, error: any) => {
           if(error.result != 'ok') {
-            throw error;
+            throw new Error(error.result);
           }
         })
       }
