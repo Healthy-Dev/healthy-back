@@ -26,21 +26,11 @@ export class UserRepository extends Repository<User> {
     createUserDto: CreateUserDto,
     photoUrl: string,
   ): Promise<{ id: number }> {
-    const {
-      email,
-      username,
-      password,
-      name,
-      twitter,
-      instagram,
-    } = createUserDto;
+    const { email, username, password } = createUserDto;
     const user = new User();
     user.email = email;
     user.username = username;
     user.password = password;
-    user.name = name;
-    user.twitter = twitter;
-    user.instagram = instagram;
     user.profilePhoto = photoUrl;
     try {
       await user.save();

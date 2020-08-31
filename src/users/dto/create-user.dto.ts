@@ -28,16 +28,4 @@ export class CreateUserDto {
       'Healthy Dev te pide que el password contenga al menos una mayúscula, una minúscula y un número, sin espacios. Largo entre 8 y 250 caracteres',
   })
   password: string;
-
-  @IsOptional()
-  name: string;
-
-  @IsOptional()
-  profilePhoto: string;
-
-  @IsOptional()
-  twitter: string;
-
-  @IsOptional()
-  instagram: string;
 }
