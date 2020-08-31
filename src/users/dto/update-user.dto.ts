@@ -5,7 +5,7 @@ export class UpdateUserDto {
   name: string;
 
   @IsOptional()
-  photo: string;
+  profilePhoto: string;
 
   @IsOptional()
   twitter: string;

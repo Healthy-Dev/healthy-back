@@ -22,7 +22,7 @@ export class UsersController {
     return this.userService.getUser(username);
   }
 
-  @Put('v1/users')
+  @Put('v1/users/me')
   @UseGuards(AuthGuard('jwt'))
   async changePassword(
     @GetUser() { username }: User,

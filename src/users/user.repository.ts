@@ -69,7 +69,6 @@ export class UserRepository extends Repository<User> {
     updateData: UpdateUserDto,
     username: string,
   ): Promise<{ message: string }> {
-    console.log(updateData);
     await this.update({ username }, updateData);
     return {
       message: 'El usuario ha sido actualizado con éxito',

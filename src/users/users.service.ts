@@ -73,8 +73,7 @@ export class UsersService {
     updateData: UpdateUserDto,
     username: string,
   ): Promise<{ message: string }> {
-    let { photo } = updateData;
-    if (photo) {
+    if (updateData.profilePhoto) {
       let { profilePhoto } = await this.userRepository.findOne({username})
       if(profilePhoto) {
         const strUrl = profilePhoto.split('/');
@@ -84,7 +83,7 @@ export class UsersService {
             imagePublicId = item.split('.')[0];
           }
         })
-        if(imagePublicId !== 'placeholder.jpg') {
+        if(imagePublicId !== 'placeholder') {
           await cloudinary.uploader.destroy(imagePublicId, {resource_type: 'image'}, (res: any, error: any) => {
             if(error.result != 'ok') {
               throw new Error(error.result);
@@ -93,7 +92,7 @@ export class UsersService {
         }
       }
       await cloudinary.uploader.upload(
-        `data:image/jpg;base64,${photo}`,
+        `data:image/jpg;base64,${updateData.profilePhoto}`,
         {
           format: 'jpg',
           resource_type: 'image',
@@ -106,7 +105,7 @@ export class UsersService {
           if (error) {
             throw error;
           }
-          photo = response.url;
+          updateData.profilePhoto = response.url;
         },
       );
     }
