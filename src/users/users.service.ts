@@ -24,32 +24,12 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<{ id: number }> {
-    const { profilePhoto } = createUserDto;
     let photoUrl =
       'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
-    if (profilePhoto) {
-      await cloudinary.uploader.upload(
-        `data:image/jpg;base64,${profilePhoto}`,
-        {
-          format: 'jpg',
-          resource_type: 'image',
-          width: 500,
-          height: 500,
-          crop: 'limit',
-          background: '#03111F',
-        },
-        (error: any, response: any) => {
-          if (error) {
-            throw error;
-          }
-          photoUrl = response.url;
-        },
-      );
-    }
     return this.userRepository.createUser(createUserDto, photoUrl);
   }
 
-  async getUser(username: string): Promise<{user: {}}> {
+  async getUser(username: string): Promise<{ user: {} }> {
     const profile = await this.getUserByUsername(username);
     if (!profile) {
       throw new UnauthorizedException('Verifique los datos ingresados');
@@ -64,9 +44,9 @@ export class UsersService {
         twitter: profile.twitter,
         instagram: profile.instagram,
         status: profile.status,
-        role: profile.role
-      }
-    }
+        role: profile.role,
+      },
+    };
   }
 
   async updateUser(
@@ -74,21 +54,25 @@ export class UsersService {
     username: string,
   ): Promise<{ message: string }> {
     if (updateData.profilePhoto) {
-      let { profilePhoto } = await this.userRepository.findOne({username})
-      if(profilePhoto) {
+      let { profilePhoto } = await this.userRepository.findOne({ username });
+      if (profilePhoto) {
         const strUrl = profilePhoto.split('/');
         let imagePublicId = '';
         strUrl.forEach(item => {
-          if(item.match(/(.*)\.jpg/gm)){
+          if (item.match(/(.*)\.jpg/gm)) {
             imagePublicId = item.split('.')[0];
           }
-        })
-        if(imagePublicId !== 'placeholder') {
-          await cloudinary.uploader.destroy(imagePublicId, {resource_type: 'image'}, (res: any, error: any) => {
-            if(error.result != 'ok') {
-              throw new Error(error.result);
-            }
-          })
+        });
+        if (imagePublicId !== 'placeholder') {
+          await cloudinary.uploader.destroy(
+            imagePublicId,
+            { resource_type: 'image' },
+            (res: any, error: any) => {
+              if (error.result != 'ok') {
+                throw new Error(error.result);
+              }
+            },
+          );
         }
       }
       await cloudinary.uploader.upload(
