@@ -4,7 +4,7 @@ import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { NewPasswordDto } from 'src/auth/dto/new-password.dto';
+import { NewPasswordDto } from '../auth/dto/new-password.dto';
 
 const cloudinary = require('cloudinary').v2;
 

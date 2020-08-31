@@ -7,7 +7,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { GetUser } from '../auth/get-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';

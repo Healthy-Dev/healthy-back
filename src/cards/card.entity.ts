@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 
 @Index('idx_card_search', ['title', 'description'], {})
 @Entity()
