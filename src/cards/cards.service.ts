@@ -27,7 +27,7 @@ export class CardsService {
   ): Promise<{ id: number }> {
     let { photo } = createCardsDto;
     let photoUrl =
-      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
+      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
     if (photo) {
       await cloudinary.uploader.upload(
         `data:image/jpg;base64,${photo}`,
