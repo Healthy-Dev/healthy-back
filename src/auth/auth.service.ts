@@ -45,9 +45,12 @@ export class AuthService {
     return null;
   }
 
-  async setNewPassword(newPassword: NewPasswordDto, username: string): Promise<{ message: string }> {
+  async changePassword(
+    newPassword: NewPasswordDto,
+    username: string,
+  ): Promise<{ message: string }> {
     const salt = await bcrypt.genSalt();
     newPassword.password = await bcrypt.hash(newPassword.password, salt);
-    return this.usersService.setNewPassword(newPassword, username);
+    return this.usersService.changePassword(newPassword, username);
   }
 }

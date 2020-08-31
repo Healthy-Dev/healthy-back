@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,7 +26,7 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<{ id: number }> {
     const { profilePhoto } = createUserDto;
     let photoUrl =
-      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/tcu6xvx0hh62iyys05fs.jpg';
+      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
     if (profilePhoto) {
       await cloudinary.uploader.upload(
         `data:image/jpg;base64,${profilePhoto}`,
@@ -49,11 +49,51 @@ export class UsersService {
     return this.userRepository.createUser(createUserDto, photoUrl);
   }
 
-  async updateUser(updateData: UpdateUserDto, username: string): Promise<User>  {
-    let { profilePhoto } = updateData;
-    if (profilePhoto) {
+  async getUser(username: string): Promise<{user: {}}> {
+    const profile = await this.getUserByUsername(username);
+    if (!profile) {
+      throw new UnauthorizedException('Verifique los datos ingresados');
+    }
+    return {
+      user: {
+        id: profile.id,
+        email: profile.email,
+        username: profile.username,
+        name: profile.name,
+        profilePhoto: profile.profilePhoto,
+        twitter: profile.twitter,
+        instagram: profile.instagram,
+        status: profile.status,
+        role: profile.role
+      }
+    }
+  }
+
+  async updateUser(
+    updateData: UpdateUserDto,
+    username: string,
+  ): Promise<{ message: string }> {
+    let { profilePhoto } = await this.userRepository.findOne({username})
+    if(profilePhoto) {
+      const strUrl = profilePhoto.split('/');
+      let imagePublicId = '';
+      strUrl.forEach(item => {
+        if(item.match(/(.*)\.jpg/gm)){
+          imagePublicId = item;
+        }
+      })
+      if(imagePublicId !== 'placeholder.jpg') {
+        await cloudinary.uploader.destroy(imagePublicId, {resource_type: 'image'}, (res: any, error: any) => {
+          if(error.result != 'ok') {
+            throw error;
+          }
+        })
+      }
+    }
+    let { photo } = updateData;
+    if (photo) {
       await cloudinary.uploader.upload(
-        `data:image/jpg;base64,${profilePhoto}`,
+        `data:image/jpg;base64,${photo}`,
         {
           format: 'jpg',
           resource_type: 'image',
@@ -66,14 +106,17 @@ export class UsersService {
           if (error) {
             throw error;
           }
-          profilePhoto = response.url;
+          photo = response.url;
         },
       );
     }
-    return this.userRepository.updateUser(updateData, username)
+    return this.userRepository.updateUser(updateData, username);
   }
 
-  async setNewPassword(newPassword: NewPasswordDto, username: string): Promise<{ message: string }> {
-    return this.userRepository.setNewPassword(newPassword, username);
+  async changePassword(
+    newPassword: NewPasswordDto,
+    username: string,
+  ): Promise<{ message: string }> {
+    return this.userRepository.changePassword(newPassword, username);
   }
 }

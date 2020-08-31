@@ -1,8 +1,6 @@
 import {
   Controller,
-  Request,
   Post,
-  Get,
   UseGuards,
   Body,
   ValidationPipe,
@@ -46,10 +44,15 @@ export class AuthController {
 
   @Post('v1/auth/new-password')
   @UseGuards(AuthGuard('jwt'))
-  public async setNewPassord(
-    @GetUser() {username}: User,
-    @Body() newPassword: NewPasswordDto
+  public async changePassword(
+    @GetUser() { username }: User,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+      }),
+    )
+    newPassword: NewPasswordDto,
   ): Promise<{ message: string }> {
-    return this.authService.setNewPassword(newPassword, username);
+    return this.authService.changePassword(newPassword, username);
   }
 }

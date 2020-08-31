@@ -5,7 +5,6 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { strict } from 'assert';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from 'src/auth/dto/new-password.dto';
 
@@ -66,19 +65,24 @@ export class UserRepository extends Repository<User> {
     return { id: user.id };
   }
 
-  async updateUser(updateData: UpdateUserDto, username: string): Promise<User> {
+  async updateUser(
+    updateData: UpdateUserDto,
+    username: string,
+  ): Promise<{ message: string }> {
+    console.log(updateData);
     await this.update({ username }, updateData);
-    const profile = this.findOne({ username });
-    return profile;
+    return {
+      message: 'El usuario ha sido actualizado con éxito',
+    };
   }
 
-  async setNewPassword(
+  async changePassword(
     newPassword: NewPasswordDto,
     username: string,
   ): Promise<{ message: string }> {
     await this.update({ username }, newPassword);
     return {
-      message: 'Contraseña Cambiada con éxito.'
-    }
+      message: 'Contraseña Cambiada con éxito.',
+    };
   }
 }
