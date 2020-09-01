@@ -1,10 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from '../auth/dto/new-password.dto';
+import { UserPreviewDto } from './dto/user-preview.dto';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -47,6 +52,19 @@ export class UsersService {
         role: profile.role,
       },
     };
+  }
+
+  async getUserById(id: number): Promise<UserPreviewDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'name', 'profilePhoto'],
+    });
+    if (!user) {
+      throw new NotFoundException(
+        `Healthy Dev le informa que el usuario con id "${id}" no fue encontrado`,
+      );
+    }
+    return user;
   }
 
   async updateUser(

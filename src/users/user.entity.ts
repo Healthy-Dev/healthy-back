@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Card } from '../cards/card.entity';
+import { UserStatus } from './user-status.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -35,8 +36,8 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   instagram: string;
 
-  @Column({ default: 'inactivo' })
-  status: string;
+  @Column({ default: UserStatus.INACTIVO })
+  status: UserStatus;
 
   @Column({ default: 'User' })
   role: string;

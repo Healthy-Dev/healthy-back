@@ -4,13 +4,16 @@ import {
   UseGuards,
   Put,
   Body,
-  ValidationPipe
+  ValidationPipe,
+  ParseIntPipe,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPreviewDto } from './dto/user-preview.dto';
 
 @Controller()
 export class UsersController {
@@ -20,6 +23,11 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   async getProfile(@GetUser() { username }: User): Promise<{ user: {} }> {
     return this.userService.getUser(username);
+  }
+
+  @Get('v1/users/:id')
+  getUserById(@Param('id', ParseIntPipe) id: number): Promise<UserPreviewDto> {
+    return this.userService.getUserById(id);
   }
 
   @Put('v1/users/me')
