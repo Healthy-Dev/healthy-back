@@ -9,7 +9,7 @@ import { NotFoundException } from '@nestjs/common';
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
   getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
-    const { offset, limit, search } = filterDto;
+    const { offset, limit, search, creatorId } = filterDto;
     const query = this.createQueryBuilder('card');
     query.select('card.id, card.title, card.photo');
     if (search) {
@@ -19,6 +19,10 @@ export class CardRepository extends Repository<Card> {
       query.orWhere('LOWER(card.description) LIKE :search', {
         search: `%${search.toLowerCase()}%`,
       });
+    }
+    if (creatorId) {
+      query.leftJoin('card.creator', 'user');
+      query.andWhere('user.id = :creatorId', { creatorId });
     }
     query.orderBy('card.id', 'DESC');
     query.offset(offset);
