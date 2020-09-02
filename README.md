@@ -56,11 +56,16 @@ TYPEORM_MIGRATIONS_DIR=src/migrations
 TYPEORM_LOGGING=true
 TYPEORM_LOGGER='file'
 
-# Las siguientes 3 variables se consiguen con la cuenta de cloudinary (solo para POST Cards)
+# Las siguientes 3 variables se consiguen con la cuenta de cloudinary
 
 CLOUDINARY_USER=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
+
+# Las siguientes 2 variables son necesarias para el modulo de autentificacion
+
+JWT_SECRET_KEY={{Texto de seguridad para desencriptar el token}}
+JWT_EXPIRES={{Tiempo que dura el token}}
 
 ```
 
