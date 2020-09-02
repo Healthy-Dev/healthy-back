@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from '../auth/dto/new-password.dto';
+import { UserStatus } from './user-status.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -32,6 +33,7 @@ export class UserRepository extends Repository<User> {
     user.username = username;
     user.password = password;
     user.profilePhoto = photoUrl;
+    user.status = UserStatus.ACTIVO;
     try {
       await user.save();
     } catch (error) {
