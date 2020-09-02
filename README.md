@@ -1,6 +1,6 @@
-<p align="center">
-  Backend para HealthyDev
-</p>
+
+<h1 align="center">Backend para HealthyDev</h1>
+
 
 ## Descripción
 
@@ -36,7 +36,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-### Configuracion
+### Configuración
 
 ```bash
 
@@ -73,10 +73,10 @@ JWT_EXPIRES={{Tiempo que dura el token}}
 
 [Link a la documentación](docs/Documentation.md)
 
-## Support
+## Soporte
 
 Contacta con la comunidad FrontEnd Cafe. https://twitter.com/FrontEndCafe
 
-## License
+## Licencia
 
   [MIT licensed](LICENSE).

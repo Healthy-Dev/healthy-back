@@ -1,51 +1,58 @@
-## HealthyDev Backend Documentation
+## HealthyDev Backend Documentación
 
 ### GET “{{URL}}/v1/cards”
 
 Muestra por defecto las últimas 15 cards creadas.
-Parámetros:
 
-offset: número desde que registro el get trae las cards, (Opcional, default 0)
-limit: límite de cantidad de cards que trae el endpoint (Opcional, default 15)
-search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
-creatorId: id de usuario creador de la card (Opcional)
-Nota: Considerando paginación o infinite scroll, definimos de cuantos registros queremos solicitar (limit por defecto 15) y tenemos un número de página (page), entonces el offset =  page * limit, si se inicia desde nroPagina = 0.
+**Parámetros:**
 
-Respuesta:
+    Enviados por URL
+    
+    - offset: número desde que registro el get trae las cards, (Opcional, por defecto 0 )
 
-Array de objetos, donde cada objeto devuelve:
+    - limit: límite de cantidad de cards que trae el endpoint (Opcional, por defecto 15)
 
-```bash
-{
-    id: id de la card,
-    title: título de la card,
-    photo: url de la imagen subida
-}
-```
+    - creatorId: id de usuario creador de la card (Opcional)
 
-Ejemplo: 
+    - search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
 
-```bash
-fetch(
-    “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST&creatorId=5”,
+        Nota: Considerando paginación o infinite scroll, definimos de cuantos registros queremos solicitar (limit por defecto 15) y tenemos un número de página (page), entonces el offset =  page * limit, si se inicia desde nroPagina = 0.
+
+**Respuesta:**
+
+    Array de objetos, donde cada objeto devuelve:
+
+    ```bash
     {
-        method: “GET”,
-    },
-)
-.then(“// Manejo de Respuesta”);
-```
+        id: id de la card,
+        title: título de la card,
+        photo: url de la imagen subida
+    }
+    ```
+
+**Ejemplo:**
+
+    ```bash
+    fetch(
+          “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST”,
+          {
+            method: “GET”,
+          },
+    )
+    .then(“// Manejo de Respuesta”);
+    ```
 
 ### GET “{{URL}}/v1/cards/:id”
 
 Muestra la card específica que se busca de acuerdo el id pasado como parámetro.
 
-Parámetros:
+**Parámetros:**
 
-id: id de la card que se necesita mostrar (Obligatorio), se pasa en la url, reemplaza a “:id”
+    Enviado por URL
+    
+    - id: id de la card que se necesita mostrar (Obligatorio), reemplaza a “:id”
 
-Respuesta:
-
-Objeto de la card:
+**Respuesta:**
 
 ```bash
 {
@@ -64,7 +71,17 @@ Objeto de la card:
 }
 ```
 
-Ejemplo: 
+    ```bash
+    {
+        id: id de la card,
+        title: título de la card,
+        description: descripción de la card,
+        photo: url de la imagen subida,
+        externalUrl: url de una web externa a la api y a la app
+    }
+    ```
+    
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -76,11 +93,11 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### POST “{{URL}}/v1/cards”
+### POST “{{URL}}/v1/cards”
 
 Crea una card.
 
-Body:
+**Body:**
 
 ```bash
 {
@@ -91,7 +108,7 @@ Body:
 }
 ```
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -99,7 +116,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -127,7 +144,7 @@ fetch(
 
 Registra un nuevo usuario
 
-Body:
+**Body:**
 
 ```bash
 {
@@ -137,7 +154,7 @@ Body:
 }
 ```
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -145,7 +162,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -171,7 +188,7 @@ fetch(
 
 Loguearse usuario registrado, puede hacerlo por el username o email.
 
-Body:
+**Body:**
 
 ```bash
 {
@@ -180,7 +197,7 @@ Body:
 }
 ```
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -188,7 +205,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -213,7 +230,7 @@ fetch(
 
 Muestra los datos del usuario actual
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -229,7 +246,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -249,7 +266,7 @@ fetch(
 
 Modificación datos usuario
 
-Body:
+**Body:**
 
 ```bash
 {
@@ -260,7 +277,7 @@ Body:
 }
 ```
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -268,7 +285,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -296,11 +313,11 @@ fetch(
 
 Devuelve el user con el id pasado como parámetro.
 
-Parámetros:
+**Parámetros:**
 
 id: id del user que se necesita mostrar (Obligatorio), se pasa en la url, reemplaza a “:id”
 
-Respuesta:
+**Respuesta:**
 
 Objeto del user:
 
@@ -312,7 +329,7 @@ Objeto del user:
 }
 ```
 
-Ejemplo: 
+**Ejemplo:**
 
 ```bash
 fetch(
@@ -329,7 +346,7 @@ fetch(
 
 Cambiar contraseña de usuario actual
 
-Body:
+**Body:**
 
 ```bash
 {
@@ -337,7 +354,7 @@ Body:
 }
 ```
 
-Respuesta:
+**Respuesta:**
 
 ```bash
 {
@@ -345,7 +362,7 @@ Respuesta:
 }
 ```
 
-Ejemplo:
+**Ejemplo:**
 
 ```bash
 fetch(
