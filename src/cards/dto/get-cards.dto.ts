@@ -15,5 +15,7 @@ export class GetCardsFilterDto {
   search: string;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   creatorId: number;
 }
