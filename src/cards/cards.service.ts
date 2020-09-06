@@ -77,12 +77,7 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
-    let { photo, creator } = await this.cardRepository.findOne(id);
-    if (user === creator) {
-      throw new UnauthorizedException(
-        'Healthy dev le informa que no esta autorizado a modificar esta card.',
-      );
-    }
+    let { photo } = await this.cardRepository.findOne(id);
     if (updateCardDto.photo) {
       if (photo) {
         const strUrl = photo.split('/');
@@ -122,7 +117,7 @@ export class CardsService {
         },
       );
     }
-    return this.cardRepository.updateCards(updateCardDto, id);
+    return this.cardRepository.updateCards(updateCardDto, id, user);
   }
 
   async deleteCard(user: User, id: number): Promise<{ message: string }> {
@@ -136,12 +131,7 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
-    let { photo, creator } = await this.cardRepository.findOne(id);
-    if (user === creator) {
-      throw new UnauthorizedException(
-        'Healthy dev le informa que no esta autorizado a eliminar esta card.',
-      );
-    }
+    let { photo } = await this.cardRepository.findOne(id);
     if (photo) {
       const strUrl = photo.split('/');
       let imagePublicId = '';
@@ -162,6 +152,6 @@ export class CardsService {
         );
       }
     }
-    return this.cardRepository.deleteCard(id);
+    return this.cardRepository.deleteCard(id, user);
   }
 }

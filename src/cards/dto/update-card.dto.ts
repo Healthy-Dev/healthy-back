@@ -10,10 +10,8 @@ export class UpdateCardDto {
   description: string;
 
   @IsOptional()
-  @IsNotEmpty({message: 'Healthy Dev te pide que no dejes la foto vacía.'})
   photo: string;
 
   @IsOptional()
-  @IsNotEmpty({message: 'Healthy Dev te pide que no dejes el link vacío.'})
   externalUrl: string;
 }

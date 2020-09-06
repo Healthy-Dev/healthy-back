@@ -64,27 +64,28 @@ export class CardRepository extends Repository<Card> {
 
   async updateCards(
     updateCardDto: UpdateCardDto,
-    id: number
+    id: number,
+    user: User,
   ): Promise<Card> {
-    const updateCard = await this.update(id, updateCardDto);
-    if(updateCard.affected === 0) {
+    const updateCard = await this.update({id, creator: user}, updateCardDto);
+    if (updateCard.affected === 0) {
       throw new NotFoundException(
-        `Healthy Dev no encontró nada con el id ${id}`,
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
       );
-    } 
+    }
     const card = await this.findOne(id);
     return card;
   }
 
-  async deleteCard(id: number): Promise<{message: string}> {
-    const deleteCard = await this.delete(id);
-    if(deleteCard.affected === 0) {
+  async deleteCard(id: number, user: User): Promise<{ message: string }> {
+    const deleteCard = await this.delete({id, creator: user});
+    if (deleteCard.affected === 0) {
       throw new NotFoundException(
-        `Healthy Dev no encontró nada con el id ${id}`,
+        `Healthy Dev no pudo eliminar la card con el id ${id}`,
       );
     }
     return {
-      message: `La Card con el id: ${id} fue eliminada con éxito.`
-    } 
+      message: `La Card con el id: ${id} fue eliminada con éxito.`,
+    };
   }
 }
