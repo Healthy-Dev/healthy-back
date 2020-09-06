@@ -1,4 +1,4 @@
-import { Repository, EntityRepository, UpdateResult } from 'typeorm';
+import { Repository, EntityRepository } from 'typeorm';
 import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
@@ -6,7 +6,6 @@ import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { cards1588989281835 } from '../migrations/1588989281835-cards';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
