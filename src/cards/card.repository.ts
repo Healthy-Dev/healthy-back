@@ -49,14 +49,21 @@ export class CardRepository extends Repository<Card> {
     return { id: card.id };
   }
 
-  async getCardById(id: number): Promise<{ card: Card, likedBy: User[]}> {
+  async getCardById(id: number): Promise<{ card: Card, likedBy: {userId: number, userName: string}[]}> {
     const query = this.createQueryBuilder('card');
     query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
     query.leftJoin('card.creator', 'user');
     query.where('card.id = :id', { id });
     const card = await query.getOne();
     const cardById = await this.findOne(id);
-    const likedByUsers = cardById.likesBy;
+    const likedUsers: {userId: number, userName: string}[] = [];
+    cardById.likesBy.forEach(user => {
+      const likeUser: {userId: number, userName: string} = {
+        userId: user.id,
+        userName: user.username
+      }
+      likedUsers.push(likeUser);
+    })
     if (!card) {
       throw new NotFoundException(
         `Healthy Dev no encontró nada con el id ${id}`,
@@ -64,7 +71,7 @@ export class CardRepository extends Repository<Card> {
     }
     return {
       card: card,
-      likedBy: likedByUsers
+      likedBy: likedUsers
     };
   }
 
