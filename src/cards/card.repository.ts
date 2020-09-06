@@ -55,7 +55,8 @@ export class CardRepository extends Repository<Card> {
     query.leftJoin('card.creator', 'user');
     query.where('card.id = :id', { id });
     const card = await query.getOne();
-    const likedByUsers = card.likesBy;
+    const cardById = await this.findOne(id);
+    const likedByUsers = cardById.likesBy;
     if (!card) {
       throw new NotFoundException(
         `Healthy Dev no encontró nada con el id ${id}`,
@@ -107,7 +108,6 @@ export class CardRepository extends Repository<Card> {
   }
 
   async deleteLike(user: User, id: number): Promise<{message: string}> {
-    
     try {
       const card = await this.findOne(id)
       card.likesBy = card.likesBy.filter(like => like.id !== user.id);
