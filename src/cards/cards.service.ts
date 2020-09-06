@@ -24,7 +24,7 @@ export class CardsService {
     return this.cardRepository.getCards(filterDto);
   }
 
-  async getCardById(id: number): Promise<Card> {
+  async getCardById(id: number): Promise<{ card: Card, likedBy: any[]}> {
     return this.cardRepository.getCardById(id);
   }
 

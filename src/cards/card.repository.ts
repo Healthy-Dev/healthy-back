@@ -6,6 +6,7 @@ import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { cards1588989281835 } from '../migrations/1588989281835-cards';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
@@ -48,18 +49,22 @@ export class CardRepository extends Repository<Card> {
     return { id: card.id };
   }
 
-  async getCardById(id: number): Promise<Card> {
+  async getCardById(id: number): Promise<{ card: Card, likedBy: User[]}> {
     const query = this.createQueryBuilder('card');
     query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
     query.leftJoin('card.creator', 'user');
     query.where('card.id = :id', { id });
     const card = await query.getOne();
+    const likedByUsers = card.likesBy;
     if (!card) {
       throw new NotFoundException(
         `Healthy Dev no encontró nada con el id ${id}`,
       );
     }
-    return card;
+    return {
+      card: card,
+      likedBy: likedByUsers
+    };
   }
 
   async updateCards(
@@ -102,6 +107,7 @@ export class CardRepository extends Repository<Card> {
   }
 
   async deleteLike(user: User, id: number): Promise<{message: string}> {
+    
     try {
       const card = await this.findOne(id)
       card.likesBy = card.likesBy.filter(like => like.id !== user.id);
