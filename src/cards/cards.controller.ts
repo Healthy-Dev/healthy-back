@@ -21,7 +21,7 @@ import { User } from '../users/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { UpdateResult } from 'typeorm';
+
 @Controller()
 export class CardsController {
   constructor(private cardsService: CardsService) {}
@@ -66,5 +66,23 @@ export class CardsController {
     @Param('id', ParseIntPipe) id: number
   ): Promise<{message: string}> {
     return this.cardsService.deleteCard(user, id);
+  }
+
+  @Post('v1/cards/:id/like')
+  @UseGuards(AuthGuard())
+  addLike(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<{message: string}> {
+    return this.cardsService.addLike(user, id);
+  }
+
+  @Delete('v1/cards/:id/like')
+  @UseGuards(AuthGuard())
+  deleteLike(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<{message: string}> {
+    return this.cardsService.deleteLike(user, id);
   }
 }

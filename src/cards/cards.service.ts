@@ -1,6 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +11,6 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { User } from '../users/user.entity';
 import { UserStatus } from '../users/user-status.enum';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { UpdateResult } from 'typeorm';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -135,5 +133,33 @@ export class CardsService {
       );
     }
     return this.cardRepository.deleteCard(id);
+  }
+
+  async addLike(user: User, id: number): Promise<{message: string}> {
+    if (user.status === UserStatus.INACTIVO) {
+      throw new UnauthorizedException(
+        'Healthy dev le informa que debe activar la cuenta por email primero.',
+      );
+    }
+    if (user.status === UserStatus.BANEADO) {
+      throw new UnauthorizedException(
+        'Healthy dev le informa que su cuenta se encuentra en revisión.',
+      );
+    }
+    return this.cardRepository.addLike(user, id);
+  }
+
+  async deleteLike(user: User, id: number): Promise<{message: string}> {
+    if (user.status === UserStatus.INACTIVO) {
+      throw new UnauthorizedException(
+        'Healthy dev le informa que debe activar la cuenta por email primero.',
+      );
+    }
+    if (user.status === UserStatus.BANEADO) {
+      throw new UnauthorizedException(
+        'Healthy dev le informa que su cuenta se encuentra en revisión.',
+      );
+    }
+    return this.cardRepository.deleteLike(user, id);
   }
 }

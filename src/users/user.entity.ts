@@ -6,6 +6,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
 } from 'typeorm';
 import { Card } from '../cards/card.entity';
 import { UserStatus } from './user-status.enum';
@@ -53,4 +54,10 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(
+    type => Card,
+    card => card.likesBy
+  )
+  likes: Card[];
 }
