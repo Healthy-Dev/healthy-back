@@ -1,10 +1,11 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { Repository, EntityRepository, UpdateResult } from 'typeorm';
 import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
 import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
+import { UpdateCardDto } from './dto/update-card.dto';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
@@ -59,5 +60,32 @@ export class CardRepository extends Repository<Card> {
       );
     }
     return card;
+  }
+
+  async updateCards(
+    updateCardDto: UpdateCardDto,
+    id: number,
+    user: User,
+  ): Promise<Card> {
+    const updateCard = await this.update({id, creator: user}, updateCardDto);
+    if (updateCard.affected === 0) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
+      );
+    }
+    const card = await this.findOne(id);
+    return card;
+  }
+
+  async deleteCard(id: number, user: User): Promise<{ message: string }> {
+    const deleteCard = await this.delete({id, creator: user});
+    if (deleteCard.affected === 0) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo eliminar la card con el id ${id}`,
+      );
+    }
+    return {
+      message: `La Card con el id: ${id} fue eliminada con éxito.`,
+    };
   }
 }

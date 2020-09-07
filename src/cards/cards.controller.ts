@@ -9,6 +9,9 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Put,
+  Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { Card } from './card.entity';
@@ -18,6 +21,8 @@ import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateCardDto } from './dto/update-card.dto';
+
 @Controller()
 export class CardsController {
   constructor(private cardsService: CardsService) {}
@@ -41,5 +46,33 @@ export class CardsController {
     @GetUser() user: User,
   ): Promise<{ id: number }> {
     return this.cardsService.createCards(createCardsDto, user);
+  }
+
+  @Put('v1/cards/:id')
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  )
+  @UseGuards(AuthGuard())
+  updateCards(
+    @Body() updateCardDto: UpdateCardDto,
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Card> {
+    if(Object.keys(updateCardDto).length === 0){
+      throw new BadRequestException('Debe modificar al menos alguno de los campos, titulo, descripcion, imagen o link.')
+    }
+    return this.cardsService.updateCards(updateCardDto, user, id);
+  }
+
+  @Delete('v1/cards/:id')
+  @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard())
+  deleteCard(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
+    return this.cardsService.deleteCard(user, id);
   }
 }

@@ -71,16 +71,6 @@ Muestra la card específica que se busca de acuerdo el id pasado como parámetro
 }
 ```
 
-    ```bash
-    {
-        id: id de la card,
-        title: título de la card,
-        description: descripción de la card,
-        photo: url de la imagen subida,
-        externalUrl: url de una web externa a la api y a la app
-    }
-    ```
-    
 **Ejemplo:**
 
 ```bash
@@ -135,6 +125,98 @@ fetch(
                 “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ” 
             }
         ) 
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### PUT “{{URL}}/v1/cards/:id”
+
+Modifica una card.
+
+**Body:**
+
+```bash
+{
+    title: título de la card a crear (Opcional),
+    description: descripción de la card a crear (Opcional),
+    photo: imagen en string-base64 (Opcional),
+    externalUrl: url de web externa a la app y a la api (Opcional)
+}
+```
+
+**Respuesta:**
+
+```bash
+{
+    id: id de la card,
+    title: título de la card,
+    description: descripción de la card,
+    photo: url de la imagen subida,
+    externalUrl: url de una web externa a la api y a la app,
+    createdAt: fecha hora de creación,
+    updatedAt: fecha hora de modificación,
+    creator: {
+        id: id de usuario creador,
+        name: nombre de usuario creador,
+        profilePhoto: url de la foto de perfil del creador
+    }
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/cards/1”,
+    {
+        method: PUT,
+        headers:{
+                “Content-Type“: “aplication/json“,
+                “Authorization“: “Bearer {{userToken}}“
+        },
+        body: JSON.stringify(
+            {
+                “title“: “Comida Healthy”,
+                “description”: “Recetas para cocinar sano en época de cuarentena”,
+                “photo”: “ // imagen subida desde la app, en string-base64 “,
+                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ” 
+            }
+        ) 
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### DELETE “{{URL}}/v1/cards/:id”
+
+Elimina una card.
+
+**Parámetros:**
+
+    Enviado por URL
+    
+    - id: id de la card que se necesita eliminar (Obligatorio), reemplaza a “:id”
+
+**Respuesta:**
+
+```bash
+{
+    message: “La Card con el id: 100 fue eliminada con éxito.“
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/cards/100”,
+    {
+        method: DELETE,
+        headers:{
+            “Content-Type“: “aplication/json“,
+            “Authorization“: “Bearer {{userToken}}“
+        },
     },
 )
 .then(“// Manejo de Respuesta”);
