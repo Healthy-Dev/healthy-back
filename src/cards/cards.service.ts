@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './card.entity';
 import { CardRepository } from './card.repository';
@@ -77,10 +77,15 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
-    let { photo } = await this.cardRepository.findOne(id);
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
+      );
+    }
     if (updateCardDto.photo) {
-      if (photo) {
-        const strUrl = photo.split('/');
+      if (card.photo) {
+        const strUrl = card.photo.split('/');
         let imagePublicId = '';
         strUrl.forEach(item => {
           if (item.match(/(.*)\.jpg/gm)) {
@@ -131,9 +136,14 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
-    let { photo } = await this.cardRepository.findOne(id);
-    if (photo) {
-      const strUrl = photo.split('/');
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
+      );
+    }
+    if (card.photo) {
+      const strUrl = card.photo.split('/');
       let imagePublicId = '';
       strUrl.forEach(item => {
         if (item.match(/(.*)\.jpg/gm)) {
