@@ -33,7 +33,7 @@ export class CardsController {
   }
 
   @Get('v1/cards/:id')
-  getCardById(@Param('id', ParseIntPipe) id: number): Promise<{ card: Card, likedBy: any[]}> {
+  getCardById(@Param('id', ParseIntPipe) id: number): Promise<Card> {
     return this.cardsService.getCardById(id);
   }
 
