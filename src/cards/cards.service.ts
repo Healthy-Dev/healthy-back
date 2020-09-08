@@ -1,6 +1,7 @@
 import {
   Injectable,
   UnauthorizedException,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './card.entity';
@@ -16,9 +17,7 @@ const cloudinary = require('cloudinary').v2;
 
 @Injectable()
 export class CardsService {
-  constructor(
-    @InjectRepository(Card) private cardRepository: CardRepository
-  ) {}
+  constructor(@InjectRepository(Card) private cardRepository: CardRepository) {}
 
   async getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return this.cardRepository.getCards(filterDto);
@@ -67,7 +66,11 @@ export class CardsService {
     return this.cardRepository.createCards(createCardsDto, user, photoUrl);
   }
 
-  async updateCards(updateCardDto: UpdateCardDto, user: User, id: number): Promise<Card> {
+  async updateCards(
+    updateCardDto: UpdateCardDto,
+    user: User,
+    id: number,
+  ): Promise<Card> {
     if (user.status === UserStatus.INACTIVO) {
       throw new UnauthorizedException(
         'Healthy dev le informa que debe activar la cuenta por email primero.',
@@ -78,10 +81,15 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
+      );
+    }
     if (updateCardDto.photo) {
-      let { photo } = await this.cardRepository.findOne(id);
-      if (photo) {
-        const strUrl = photo.split('/');
+      if (card.photo) {
+        const strUrl = card.photo.split('/');
         let imagePublicId = '';
         strUrl.forEach(item => {
           if (item.match(/(.*)\.jpg/gm)) {
@@ -118,10 +126,10 @@ export class CardsService {
         },
       );
     }
-    return this.cardRepository.updateCards(updateCardDto, id);
+    return this.cardRepository.updateCards(updateCardDto, id, user);
   }
 
-  async deleteCard(user: User, id: number): Promise<{message: string}> {
+  async deleteCard(user: User, id: number): Promise<{ message: string }> {
     if (user.status === UserStatus.INACTIVO) {
       throw new UnauthorizedException(
         'Healthy dev le informa que debe activar la cuenta por email primero.',
@@ -132,7 +140,33 @@ export class CardsService {
         'Healthy dev le informa que su cuenta se encuentra en revisión.',
       );
     }
-    return this.cardRepository.deleteCard(id);
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(
+        `Healthy Dev no pudo modificar la card con el id ${id}`,
+      );
+    }
+    if (card.photo) {
+      const strUrl = card.photo.split('/');
+      let imagePublicId = '';
+      strUrl.forEach(item => {
+        if (item.match(/(.*)\.jpg/gm)) {
+          imagePublicId = item.split('.')[0];
+        }
+      });
+      if (imagePublicId !== 'placeholder') {
+        await cloudinary.uploader.destroy(
+          imagePublicId,
+          { resource_type: 'image' },
+          (res: any, error: any) => {
+            if (error.result != 'ok') {
+              throw new Error(error.result);
+            }
+          },
+        );
+      }
+    }
+    return this.cardRepository.deleteCard(id, user);
   }
 
   async addLike(user: User, id: number): Promise<{message: string}> {

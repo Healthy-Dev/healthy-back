@@ -7,6 +7,7 @@ import {
   ValidationPipe,
   ParseIntPipe,
   Param,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetUser } from '../auth/get-user.decorator';
@@ -41,6 +42,9 @@ export class UsersController {
     )
     updateData: UpdateUserDto,
   ): Promise<{ message: string }> {
+    if(Object.keys(updateData).length === 0){
+      throw new BadRequestException('Debe modificar al menos alguno de los campos, nombre, foto de perfil, links de instagram o twitter.')
+    }
     return this.userService.updateUser(updateData, username);
   }
 }
