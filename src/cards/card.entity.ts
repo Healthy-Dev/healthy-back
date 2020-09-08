@@ -7,6 +7,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  JoinTable,
+  ManyToMany,
+  RelationCount,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 
@@ -39,4 +42,15 @@ export class Card extends BaseEntity {
     creator => creator.username,
   )
   creator: User;
+
+  @ManyToMany(
+    type => User,
+    user => user.likes,
+    { eager: true },
+  )
+  @JoinTable()
+  likesBy: User[];
+
+  @RelationCount((card: Card) => card.likesBy)
+  likesCount: number;
 }

@@ -1,4 +1,4 @@
-import { Repository, EntityRepository, UpdateResult } from 'typeorm';
+import { Repository, EntityRepository } from 'typeorm';
 import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
@@ -52,6 +52,8 @@ export class CardRepository extends Repository<Card> {
     const query = this.createQueryBuilder('card');
     query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
     query.leftJoin('card.creator', 'user');
+    query.addSelect(['user_like.id', 'user_like.username']);
+    query.leftJoin('card.likesBy', 'user_like');
     query.where('card.id = :id', { id });
     const card = await query.getOne();
     if (!card) {
@@ -87,5 +89,31 @@ export class CardRepository extends Repository<Card> {
     return {
       message: `La Card con el id: ${id} fue eliminada con éxito.`,
     };
+  }
+
+  async addLike(user: User, id: number): Promise<{message: string}> {
+    try {
+      const card = await this.findOne(id)
+      card.likesBy.push(user)
+      await card.save()
+    } catch (e) {
+      throw new NotFoundException(`Hubo un error, el error es ${e}`)
+    }
+    return {
+      message: "¡Me gusta!"
+    }
+  }
+
+  async deleteLike(user: User, id: number): Promise<{message: string}> {
+    try {
+      const card = await this.findOne(id)
+      card.likesBy = card.likesBy.filter(like => like.id !== user.id);
+      await card.save()
+    } catch (e) {
+      throw new NotFoundException(`Hubo un error, el error es ${e}`)
+    }
+    return {
+      message: "¡No me gusta más!"
+    }
   }
 }
