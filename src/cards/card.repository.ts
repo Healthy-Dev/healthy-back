@@ -97,7 +97,7 @@ export class CardRepository extends Repository<Card> {
       card.likesBy.push(user)
       await card.save()
     } catch (e) {
-      throw new Error(`Hubo un error, el error es ${e}`)
+      throw new NotFoundException(`Hubo un error, el error es ${e}`)
     }
     return {
       message: "¡Me gusta!"
@@ -110,7 +110,7 @@ export class CardRepository extends Repository<Card> {
       card.likesBy = card.likesBy.filter(like => like.id !== user.id);
       await card.save()
     } catch (e) {
-      throw new Error(`Hubo un error, el error es ${e}`)
+      throw new NotFoundException(`Hubo un error, el error es ${e}`)
     }
     return {
       message: "¡No me gusta más!"
