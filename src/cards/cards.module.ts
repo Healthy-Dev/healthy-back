@@ -4,9 +4,10 @@ import { CardsService } from './cards.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CardRepository } from './card.repository';
 import { AuthModule } from '../auth/auth.module';
+import { ImageManagementModule } from '../image-management/image-management.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CardRepository]), AuthModule],
+  imports: [TypeOrmModule.forFeature([CardRepository]), AuthModule, ImageManagementModule],
   controllers: [CardsController],
   providers: [CardsService],
 })

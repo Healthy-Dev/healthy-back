@@ -22,6 +22,7 @@ import { User } from '../users/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { UserActiveValidationPipe } from '../users/pipes/user-active-validation.pipe';
 
 @Controller()
 export class CardsController {
@@ -43,7 +44,7 @@ export class CardsController {
   @UseGuards(AuthGuard())
   createCards(
     @Body() createCardsDto: CreateCardDto,
-    @GetUser() user: User,
+    @GetUser(new UserActiveValidationPipe()) user: User,
   ): Promise<{ id: number }> {
     return this.cardsService.createCards(createCardsDto, user);
   }
@@ -57,11 +58,13 @@ export class CardsController {
   @UseGuards(AuthGuard())
   updateCards(
     @Body() updateCardDto: UpdateCardDto,
-    @GetUser() user: User,
+    @GetUser(new UserActiveValidationPipe()) user: User,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Card> {
-    if(Object.keys(updateCardDto).length === 0){
-      throw new BadRequestException('Debe modificar al menos alguno de los campos, titulo, descripcion, imagen o link.')
+    if (Object.keys(updateCardDto).length === 0) {
+      throw new BadRequestException(
+        'Debe modificar al menos alguno de los campos, titulo, descripcion, imagen o link.',
+      );
     }
     return this.cardsService.updateCards(updateCardDto, user, id);
   }
@@ -70,7 +73,7 @@ export class CardsController {
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
   deleteCard(
-    @GetUser() user: User,
+    @GetUser(new UserActiveValidationPipe()) user: User,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
     return this.cardsService.deleteCard(user, id);
@@ -79,18 +82,18 @@ export class CardsController {
   @Post('v1/cards/:id/like')
   @UseGuards(AuthGuard())
   addLike(
-    @GetUser() user: User,
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<{message: string}> {
+    @GetUser(new UserActiveValidationPipe()) user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     return this.cardsService.addLike(user, id);
   }
 
   @Delete('v1/cards/:id/like')
   @UseGuards(AuthGuard())
   deleteLike(
-    @GetUser() user: User,
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<{message: string}> {
+    @GetUser(new UserActiveValidationPipe()) user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     return this.cardsService.deleteLike(user, id);
   }
 }
