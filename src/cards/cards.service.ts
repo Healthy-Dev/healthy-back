@@ -14,6 +14,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { User } from '../users/user.entity';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { ImageManagementService } from '../image-management/image-management.service';
+import { CardCategories } from './card-categories';
 
 @Injectable()
 export class CardsService {
@@ -87,5 +88,16 @@ export class CardsService {
 
   async deleteLike(user: User, id: number): Promise<{ message: string }> {
     return this.cardRepository.deleteLike(user, id);
+  }
+
+  getCardsCategories(): Array<{ name: string }> {
+    const cardCategories = [];
+    for (const [propertyKey, propertyValue] of Object.entries(CardCategories)) {
+      if (!Number.isNaN(Number(propertyKey))) {
+        continue;
+      }
+      cardCategories.push({ name: propertyValue });
+    }
+    return cardCategories;
   }
 }
