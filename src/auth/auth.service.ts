@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
@@ -14,15 +14,21 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<{ id: number }> {
+  async signUp(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
+    const { username, password } = createUserDto;
     const salt = await bcrypt.genSalt();
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
-    return this.usersService.createUser(createUserDto);
+    const userId = await this.usersService.createUser(createUserDto);
+    if (!userId) {
+      throw new InternalServerErrorException(
+        'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
+      );
+    }
+    const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
+    return this.signIn(authCredentialsDto);
   }
 
-  async signIn(
-    authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
+  async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
     const username = await this.validateUserPassword(authCredentialsDto);
     if (!username) {
       throw new UnauthorizedException('Verifique los datos ingresados');
@@ -32,13 +38,9 @@ export class AuthService {
     return { accessToken };
   }
 
-  async validateUserPassword(
-    authCredentialsDto: AuthCredentialsDto,
-  ): Promise<string> {
+  async validateUserPassword(authCredentialsDto: AuthCredentialsDto): Promise<string> {
     const { usernameOrEmail, password } = authCredentialsDto;
-    const user = await this.usersService.getUserByUsernameOrEmail(
-      usernameOrEmail,
-    );
+    const user = await this.usersService.getUserByUsernameOrEmail(usernameOrEmail);
     if (user && (await await bcrypt.compare(password, user.password))) {
       return user.username;
     }
