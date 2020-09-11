@@ -34,6 +34,11 @@ export class CardsController {
     return this.cardsService.getCards(filterDto);
   }
 
+  @Get('v1/cards/categories')
+  getCardsCategories(): Array<{ name: string }> {
+    return this.cardsService.getCardsCategories();
+  }
+
   @Get('v1/cards/:id')
   getCardById(@Param('id', ParseIntPipe) id: number): Promise<Card> {
     return this.cardsService.getCardById(id);

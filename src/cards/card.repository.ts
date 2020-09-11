@@ -1,4 +1,4 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { Repository, EntityRepository, Brackets } from 'typeorm';
 import { Card } from './card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { GetCardsFilterDto } from './dto/get-cards.dto';
@@ -10,20 +10,27 @@ import { UpdateCardDto } from './dto/update-card.dto';
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
   getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
-    const { offset, limit, search, creatorId } = filterDto;
+    const { offset, limit, search, creatorId, category } = filterDto;
     const query = this.createQueryBuilder('card');
     query.select('card.id, card.title, card.photo');
     if (search) {
-      query.where('LOWER(card.title) LIKE :search', {
-        search: `%${search.toLowerCase()}%`,
-      });
-      query.orWhere('LOWER(card.description) LIKE :search', {
-        search: `%${search.toLowerCase()}%`,
-      });
+      query.where(
+        new Brackets(sqb => {
+          sqb.where('LOWER(card.title) LIKE :search', {
+            search: `%${search.toLowerCase()}%`,
+          });
+          sqb.orWhere('LOWER(card.description) LIKE :search', {
+            search: `%${search.toLowerCase()}%`,
+          });
+        }),
+      );
     }
     if (creatorId) {
       query.leftJoin('card.creator', 'user');
       query.andWhere('user.id = :creatorId', { creatorId });
+    }
+    if (category) {
+      query.andWhere('card.category = :category', { category });
     }
     query.orderBy('card.id', 'DESC');
     query.offset(offset);
@@ -37,13 +44,14 @@ export class CardRepository extends Repository<Card> {
     user: User,
     photoUrl: string,
   ): Promise<{ id: number }> {
-    const { title, description, externalUrl } = createCardDto;
+    const { title, description, externalUrl, category } = createCardDto;
     const card = new Card();
     card.title = title;
     card.description = description;
     card.externalUrl = externalUrl;
     card.photo = photoUrl;
     card.creator = user;
+    card.category = category;
     await card.save();
     return { id: card.id };
   }
@@ -57,63 +65,53 @@ export class CardRepository extends Repository<Card> {
     query.where('card.id = :id', { id });
     const card = await query.getOne();
     if (!card) {
-      throw new NotFoundException(
-        `Healthy Dev no encontró nada con el id ${id}`,
-      );
+      throw new NotFoundException(`Healthy Dev no encontró nada con el id ${id}`);
     }
     return card;
   }
 
-  async updateCards(
-    updateCardDto: UpdateCardDto,
-    id: number,
-    user: User,
-  ): Promise<Card> {
-    const updateCard = await this.update({id, creator: user}, updateCardDto);
+  async updateCards(updateCardDto: UpdateCardDto, id: number, user: User): Promise<Card> {
+    const updateCard = await this.update({ id, creator: user }, updateCardDto);
     if (updateCard.affected === 0) {
-      throw new NotFoundException(
-        `Healthy Dev no pudo modificar la card con el id ${id}`,
-      );
+      throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
     }
     const card = await this.findOne(id);
     return card;
   }
 
   async deleteCard(id: number, user: User): Promise<{ message: string }> {
-    const deleteCard = await this.delete({id, creator: user});
+    const deleteCard = await this.delete({ id, creator: user });
     if (deleteCard.affected === 0) {
-      throw new NotFoundException(
-        `Healthy Dev no pudo eliminar la card con el id ${id}`,
-      );
+      throw new NotFoundException(`Healthy Dev no pudo eliminar la card con el id ${id}`);
     }
     return {
       message: `La Card con el id: ${id} fue eliminada con éxito.`,
     };
   }
 
-  async addLike(user: User, id: number): Promise<{message: string}> {
+  async addLike(user: User, id: number): Promise<{ message: string }> {
     try {
-      const card = await this.findOne(id)
-      card.likesBy.push(user)
-      await card.save()
+      const card = await this.findOne(id);
+      card.likesBy.push(user);
+      await card.save();
     } catch (e) {
-      throw new NotFoundException(`Hubo un error, el error es ${e}`)
+      throw new NotFoundException(`Hubo un error, el error es ${e}`);
     }
     return {
-      message: "¡Me gusta!"
-    }
+      message: '¡Me gusta!',
+    };
   }
 
-  async deleteLike(user: User, id: number): Promise<{message: string}> {
+  async deleteLike(user: User, id: number): Promise<{ message: string }> {
     try {
-      const card = await this.findOne(id)
+      const card = await this.findOne(id);
       card.likesBy = card.likesBy.filter(like => like.id !== user.id);
-      await card.save()
+      await card.save();
     } catch (e) {
-      throw new NotFoundException(`Hubo un error, el error es ${e}`)
+      throw new NotFoundException(`Hubo un error, el error es ${e}`);
     }
     return {
-      message: "¡No me gusta más!"
-    }
+      message: '¡No me gusta más!',
+    };
   }
 }
