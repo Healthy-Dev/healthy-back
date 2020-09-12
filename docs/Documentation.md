@@ -13,6 +13,8 @@ Muestra por defecto las últimas 15 cards creadas.
     - limit: límite de cantidad de cards que trae el endpoint (Opcional, por defecto 15)
 
     - creatorId: id de usuario creador de la card (Opcional)
+    
+    - category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
 
     - search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
 
@@ -20,27 +22,27 @@ Muestra por defecto las últimas 15 cards creadas.
 
 **Respuesta:**
 
-    Array de objetos, donde cada objeto devuelve:
+Array de objetos, donde cada objeto devuelve:
 
-    ```bash
-    {
-        id: id de la card,
-        title: título de la card,
-        photo: url de la imagen subida
-    }
-    ```
+```bash
+{
+    id: id de la card,
+    title: título de la card,
+    photo: url de la imagen subida
+}
+```
 
 **Ejemplo:**
 
-    ```bash
-    fetch(
-          “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST”,
-          {
-            method: “GET”,
-          },
-    )
-    .then(“// Manejo de Respuesta”);
-    ```
+```bash
+fetch(
+      “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST”,
+      {
+        method: “GET”,
+      },
+)
+.then(“// Manejo de Respuesta”);
+```
 
 ### GET “{{URL}}/v1/cards/:id”
 
@@ -62,6 +64,7 @@ Muestra la card específica que se busca de acuerdo el id pasado como parámetro
         description: descripción de la card,
         photo: url de la imagen subida,
         externalUrl: url de una web externa a la api y a la app,
+        category: categoría de la card,
         createdAt: fecha hora de creación,
         updatedAt: fecha hora de modificación,
         creator: {
@@ -107,6 +110,7 @@ Crea una card.
     description: descripción de la card a crear (Obligatorio),
     photo: imagen en string-base64 (Opcional, si no es subida ninguna imagen se   mostrará una imagen placeholder precargada),
     externalUrl: url de web externa a la app y a la api (Opcional)
+    category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
 }
 ```
 
@@ -134,7 +138,8 @@ fetch(
                 “title“: “Comida Healthy”,
                 “description”: “Recetas para cocinar sano en época de cuarentena”,
                 “photo”: “ // imagen subida desde la app, en string-base64 “,
-                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”
+                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”,
+                “category”: “Alimentación”
             }
         )
     },
@@ -154,6 +159,7 @@ Modifica una card.
     description: descripción de la card a crear (Opcional),
     photo: imagen en string-base64 (Opcional),
     externalUrl: url de web externa a la app y a la api (Opcional)
+    category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
 }
 ```
 
@@ -166,6 +172,7 @@ Modifica una card.
     description: descripción de la card,
     photo: url de la imagen subida,
     externalUrl: url de una web externa a la api y a la app,
+    category: categoría de la card,
     createdAt: fecha hora de creación,
     updatedAt: fecha hora de modificación,
     creator: {
@@ -192,7 +199,8 @@ fetch(
                 “title“: “Comida Healthy”,
                 “description”: “Recetas para cocinar sano en época de cuarentena”,
                 “photo”: “ // imagen subida desde la app, en string-base64 “,
-                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”
+                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”,
+                “category”: “Deporte”
             }
         )
     },
@@ -302,7 +310,38 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### POST “{{URL}}/v1/auth/signup”
+### GET “{{URL}}/v1/cards/categories”
+
+Muestra las categorías de las cards
+
+**Respuesta:**
+
+```bash
+[
+    {
+        name: categoria1
+    },
+    {
+        name: categoria2
+    }
+]
+
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/cards/categories”,
+    {
+        method: “GET”,
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+
+### POST “{{URL}}/v1/auth/signup”
 
 Registra un nuevo usuario
 
@@ -320,7 +359,7 @@ Registra un nuevo usuario
 
 ```bash
 {
-    id: id de usuario
+    accessToken: jwtToken (payload username)
 }
 ```
 
@@ -346,7 +385,7 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### POST “{{URL}}/v1/auth/signin”
+### POST “{{URL}}/v1/auth/signin”
 
 Loguearse usuario registrado, puede hacerlo por el username o email.
 
