@@ -1,6 +1,5 @@
-import { IsOptional, IsNumber, IsString, IsIn } from 'class-validator';
+import { IsOptional, IsNumber, IsString, IsIn, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
-import { getAllowedCategories, CardCategories } from '../card-categories';
 export class GetCardsFilterDto {
   @IsOptional()
   @IsNumber({}, { message: 'Healthy Dev te pide que el limit sea numérico' })
@@ -19,14 +18,12 @@ export class GetCardsFilterDto {
   @IsOptional()
   @IsNumber({}, { message: 'Healthy Dev te pide que el id de creador sea numérico' })
   @Type(() => Number)
+  @IsPositive({ message: 'Healthy Dev te pide que no dejes el id del creador vacío' })
   creatorId: number;
 
   @IsOptional()
-  @IsIn(getAllowedCategories(), {
-    message:
-      'Healthy Dev te pide que ingreses una categoría válida (' +
-      getAllowedCategories().toString() +
-      ')',
-  })
-  category: CardCategories;
+  @IsNumber({}, { message: 'Healthy Dev te pide que el id de la categoría sea numérico' })
+  @Type(() => Number)
+  @IsPositive({ message: 'Healthy Dev te pide que no dejes el id de la categoría vacío' })
+  categoryId: number;
 }

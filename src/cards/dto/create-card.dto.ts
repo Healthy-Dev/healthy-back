@@ -1,5 +1,13 @@
-import { IsBase64, isBase64, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { CardCategories, getAllowedCategories } from '../card-categories';
+import { Type } from 'class-transformer';
+import {
+  IsBase64,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsUrl,
+  IsPositive,
+} from 'class-validator';
 
 export class CreateCardDto {
   @IsNotEmpty({ message: 'Healthy Dev te pide que no dejes el título vacío' })
@@ -16,13 +24,12 @@ export class CreateCardDto {
   })
   photo: string;
 
-  @IsOptional()
-  @IsString({ message: 'Healthy Dev te pide que ingreses texto en la url externa.' })
-  externalUrl: string;
+  @IsNumber({}, { message: 'Healthy Dev te pide que el id de la categoría sea numérico' })
+  @Type(() => Number)
+  @IsPositive({ message: 'Healthy Dev te pide que no dejes el id de la categoría vacío' })
+  categoryId: number;
 
   @IsOptional()
-  @IsIn(getAllowedCategories(), {
-    message: 'Healthy Dev te pide una categoría válida (' + getAllowedCategories().toString() + ')',
-  })
-  category: CardCategories;
+  @IsUrl({}, { message: 'Healthy Dev te pide que ingreses una url válida en la url externa.' })
+  externalUrl: string;
 }

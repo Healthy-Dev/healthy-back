@@ -6,11 +6,12 @@ import { CardPreviewDto } from './dto/card-preview.dto';
 import { User } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { CardCategory } from '../card-categories/card-category.entity';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
   getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
-    const { offset, limit, search, creatorId, category } = filterDto;
+    const { offset, limit, search, creatorId, categoryId } = filterDto;
     const query = this.createQueryBuilder('card');
     query.select('card.id, card.title, card.photo');
     if (search) {
@@ -25,13 +26,14 @@ export class CardRepository extends Repository<Card> {
         }),
       );
     }
+    if (categoryId) {
+      query.andWhere('card.category = :categoryId', { categoryId });
+    }
     if (creatorId) {
       query.leftJoin('card.creator', 'user');
       query.andWhere('user.id = :creatorId', { creatorId });
     }
-    if (category) {
-      query.andWhere('card.category = :category', { category });
-    }
+
     query.orderBy('card.id', 'DESC');
     query.offset(offset);
     query.limit(limit);
@@ -43,15 +45,18 @@ export class CardRepository extends Repository<Card> {
     createCardDto: CreateCardDto,
     user: User,
     photoUrl: string,
+    cardCategory: CardCategory,
   ): Promise<{ id: number }> {
-    const { title, description, externalUrl, category } = createCardDto;
+    const { title, description, externalUrl } = createCardDto;
     const card = new Card();
     card.title = title;
     card.description = description;
     card.externalUrl = externalUrl;
     card.photo = photoUrl;
     card.creator = user;
-    card.category = category;
+    if (cardCategory) {
+      card.category = cardCategory;
+    }
     await card.save();
     return { id: card.id };
   }
@@ -60,6 +65,7 @@ export class CardRepository extends Repository<Card> {
     const query = this.createQueryBuilder('card');
     query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
     query.leftJoin('card.creator', 'user');
+    query.leftJoinAndSelect('card.category', 'cardCategory');
     query.addSelect(['user_like.id', 'user_like.username']);
     query.leftJoin('card.likesBy', 'user_like');
     query.where('card.id = :id', { id });
@@ -70,12 +76,39 @@ export class CardRepository extends Repository<Card> {
     return card;
   }
 
-  async updateCards(updateCardDto: UpdateCardDto, id: number, user: User): Promise<Card> {
-    const updateCard = await this.update({ id, creator: user }, updateCardDto);
-    if (updateCard.affected === 0) {
+  async updateCards(
+    updateCardDto: UpdateCardDto,
+    id: number,
+    user: User,
+    cardCategory: CardCategory,
+  ): Promise<Card> {
+    const { title, description, photo, externalUrl } = updateCardDto;
+    const card = await this.findOne({ id, creator: user });
+    if (cardCategory) {
+      card.category = cardCategory;
+    }
+    if (title !== undefined) {
+      card.title = title;
+    }
+    if (description !== undefined) {
+      card.title = description;
+    }
+    if (photo !== undefined) {
+      card.photo = photo;
+    }
+    if (externalUrl !== undefined) {
+      card.externalUrl = externalUrl;
+    }
+    try {
+      card.save();
+    } catch (error) {
       throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
     }
-    const card = await this.findOne(id);
+    // const updateCard = await this.update({ id, creator: user }, updateCardDto);
+    // if (updateCard.affected === 0) {
+    //  throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
+    // }
+    // const card = await this.findOne(id);
     return card;
   }
 

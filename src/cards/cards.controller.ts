@@ -23,10 +23,15 @@ import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { UserActiveValidationPipe } from '../users/pipes/user-active-validation.pipe';
+import { CardCategory } from '../card-categories/card-category.entity';
+import { CardCategoriesService } from '../card-categories/card-categories.service';
 
 @Controller()
 export class CardsController {
-  constructor(private cardsService: CardsService) {}
+  constructor(
+    private cardsService: CardsService,
+    private cardCategoriesService: CardCategoriesService,
+  ) {}
 
   @Get('v1/cards')
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -35,8 +40,8 @@ export class CardsController {
   }
 
   @Get('v1/cards/categories')
-  getCardsCategories(): Array<{ name: string }> {
-    return this.cardsService.getCardsCategories();
+  getCardsCategories(): Promise<CardCategory[]> {
+    return this.cardCategoriesService.getCardsCategories();
   }
 
   @Get('v1/cards/:id')

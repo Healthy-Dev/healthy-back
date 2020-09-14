@@ -14,7 +14,8 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { User } from '../users/user.entity';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { ImageManagementService } from '../image-management/image-management.service';
-import { CardCategories } from './card-categories';
+import { CardCategoriesService } from '../card-categories/card-categories.service';
+import { CardCategory } from '../card-categories/card-category.entity';
 
 @Injectable()
 export class CardsService {
@@ -22,6 +23,7 @@ export class CardsService {
   constructor(
     @InjectRepository(Card) private cardRepository: CardRepository,
     private imageManagementService: ImageManagementService,
+    private cardCategoriesService: CardCategoriesService,
   ) {}
 
   async getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
@@ -33,15 +35,29 @@ export class CardsService {
   }
 
   async createCards(createCardsDto: CreateCardDto, user: User): Promise<{ id: number }> {
-    const { photo } = createCardsDto;
+    const { photo, categoryId } = createCardsDto;
+    const cardCategory = await this.cardCategoriesService.getCardCategoryById(categoryId);
+    if (!cardCategory) {
+      throw new NotFoundException(`Healthy Dev no encontró una categoría con el id ${categoryId}`);
+    }
     let photoUrl = this.imageManagementService.placeholderCardUrl;
     if (photo) {
       photoUrl = await this.imageManagementService.uploadImage(photo);
     }
-    return this.cardRepository.createCards(createCardsDto, user, photoUrl);
+    return this.cardRepository.createCards(createCardsDto, user, photoUrl, cardCategory);
   }
 
   async updateCards(updateCardDto: UpdateCardDto, user: User, id: number): Promise<Card> {
+    const { categoryId } = updateCardDto;
+    let cardCategory = {} as CardCategory;
+    if (categoryId) {
+      cardCategory = await this.cardCategoriesService.getCardCategoryById(categoryId);
+      if (!cardCategory) {
+        throw new NotFoundException(
+          `Healthy Dev no encontró una categoría con el id ${categoryId}`,
+        );
+      }
+    }
     const card = await this.cardRepository.findOne({ id, creator: user });
     if (!card) {
       throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
@@ -62,7 +78,7 @@ export class CardsService {
         }
       }
     }
-    return this.cardRepository.updateCards(updateCardDto, id, user);
+    return this.cardRepository.updateCards(updateCardDto, id, user, cardCategory);
   }
 
   async deleteCard(user: User, id: number): Promise<{ message: string }> {
@@ -88,16 +104,5 @@ export class CardsService {
 
   async deleteLike(user: User, id: number): Promise<{ message: string }> {
     return this.cardRepository.deleteLike(user, id);
-  }
-
-  getCardsCategories(): Array<{ name: string }> {
-    const cardCategories = [];
-    for (const [propertyKey, propertyValue] of Object.entries(CardCategories)) {
-      if (!Number.isNaN(Number(propertyKey))) {
-        continue;
-      }
-      cardCategories.push({ name: propertyValue });
-    }
-    return cardCategories;
   }
 }

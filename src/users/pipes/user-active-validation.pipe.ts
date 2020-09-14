@@ -1,10 +1,6 @@
-import {
-  PipeTransform,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { PipeTransform, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserStatus } from '../user-status.enum';
-import { User } from 'src/users/user.entity';
+import { User } from '../../users/user.entity';
 
 export class UserActiveValidationPipe implements PipeTransform {
   transform(user: User) {

@@ -1,3 +1,4 @@
+import { CardCategory } from '../card-categories/card-category.entity';
 import {
   BaseEntity,
   Entity,
@@ -12,7 +13,6 @@ import {
   RelationCount,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { CardCategories } from './card-categories';
 
 @Index('idx_card_search', ['title', 'description'], {})
 @Entity()
@@ -32,14 +32,17 @@ export class Card extends BaseEntity {
   @Column({ nullable: true })
   externalUrl: string;
 
-  @Column({ default: CardCategories.VARIOS })
-  category: CardCategories;
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(
+    type => CardCategory,
+    category => category.id,
+  )
+  category: CardCategory;
 
   @ManyToOne(
     type => User,
