@@ -100,7 +100,7 @@ export class CardRepository extends Repository<Card> {
       card.title = title;
     }
     if (description !== undefined) {
-      card.title = description;
+      card.description = description;
     }
     if (photo !== undefined) {
       card.photo = photo;
