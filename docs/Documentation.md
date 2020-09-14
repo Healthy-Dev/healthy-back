@@ -13,8 +13,8 @@ Muestra por defecto las últimas 15 cards creadas.
     - limit: límite de cantidad de cards que trae el endpoint (Opcional, por defecto 15)
 
     - creatorId: id de usuario creador de la card (Opcional)
-    
-    - category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
+
+    - categoryId: id de la categoría de la card (Opcional)
 
     - search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
 
@@ -71,18 +71,23 @@ Muestra la card específica que se busca de acuerdo el id pasado como parámetro
             id: id de usuario creador,
             name: nombre de usuario creador,
             profilePhoto: url de la foto de perfil del creador
-        likesCount: 10
-    },
-    likedBy: [
-        {
-            userId: 4,
-            userName: test15
         },
-        {
-            userId: 6,
-            userName: test10
-        }
-    ]
+        category: {
+            id: id de la categoría,
+            name: nombre de la categoría,
+        },
+        likedBy: [
+            {
+                userId: 4,
+                userName: test15
+            },
+            {
+                userId: 6,
+                userName: test10
+            }
+        ],
+        likesCount: 2
+    }
 }
 ```
 
@@ -110,7 +115,7 @@ Crea una card.
     description: descripción de la card a crear (Obligatorio),
     photo: imagen en string-base64 (Opcional, si no es subida ninguna imagen se   mostrará una imagen placeholder precargada),
     externalUrl: url de web externa a la app y a la api (Opcional)
-    category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
+    categoryId: id de la categoría de la card (Obligatorio)
 }
 ```
 
@@ -139,7 +144,7 @@ fetch(
                 “description”: “Recetas para cocinar sano en época de cuarentena”,
                 “photo”: “ // imagen subida desde la app, en string-base64 “,
                 “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”,
-                “category”: “Alimentación”
+                “categoryId”: 1
             }
         )
     },
@@ -159,7 +164,7 @@ Modifica una card.
     description: descripción de la card a crear (Opcional),
     photo: imagen en string-base64 (Opcional),
     externalUrl: url de web externa a la app y a la api (Opcional)
-    category: categoría de la card (Opcional, Categorias: Alimentación, Deporte, Espacio de trabajo, Receta, Salud mental, Rutina, Varios)
+    categoryId: id de la categoría de la card (Opcional)
 }
 ```
 
@@ -172,7 +177,6 @@ Modifica una card.
     description: descripción de la card,
     photo: url de la imagen subida,
     externalUrl: url de una web externa a la api y a la app,
-    category: categoría de la card,
     createdAt: fecha hora de creación,
     updatedAt: fecha hora de modificación,
     creator: {
@@ -180,6 +184,12 @@ Modifica una card.
         name: nombre de usuario creador,
         profilePhoto: url de la foto de perfil del creador
     }
+    category: {
+        id: id de la categoría,
+        name: nombre de la categoría,
+    }
+    likesCount: cantidad de likes de la card
+
 }
 ```
 
@@ -198,9 +208,9 @@ fetch(
             {
                 “title“: “Comida Healthy”,
                 “description”: “Recetas para cocinar sano en época de cuarentena”,
-                “photo”: “ // imagen subida desde la app, en string-base64 “,
-                “externalUrl”: “ https://www.youtube.com/watch?v=7J8PYSgi8N8 ”,
-                “category”: “Deporte”
+                “photo”: “http://res.cloudinary.com/du7xgj6ms/image/upload/v1599004796/placeholder.jpg”,
+                “externalUrl”: “https://www.youtube.com/watch?v=7J8PYSgi8N8”,
+                “categoryId”: 1
             }
         )
     },
@@ -319,9 +329,11 @@ Muestra las categorías de las cards
 ```bash
 [
     {
+        id: 1,
         name: categoria1
     },
     {
+        id: 2,
         name: categoria2
     }
 ]
@@ -339,7 +351,6 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
-
 
 ### POST “{{URL}}/v1/auth/signup”
 

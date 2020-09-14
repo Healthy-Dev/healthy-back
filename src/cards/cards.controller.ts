@@ -73,7 +73,7 @@ export class CardsController {
   ): Promise<Card> {
     if (Object.keys(updateCardDto).length === 0) {
       throw new BadRequestException(
-        'Debe modificar al menos alguno de los campos, titulo, descripcion, imagen o link.',
+        'Debe modificar al menos alguno de los campos, titulo, descripcion, imagen, link o categoría.',
       );
     }
     return this.cardsService.updateCards(updateCardDto, user, id);

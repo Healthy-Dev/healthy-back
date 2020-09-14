@@ -83,8 +83,17 @@ export class CardRepository extends Repository<Card> {
     cardCategory: CardCategory,
   ): Promise<Card> {
     const { title, description, photo, externalUrl } = updateCardDto;
-    const card = await this.findOne({ id, creator: user });
-    if (cardCategory) {
+    const query = this.createQueryBuilder('card');
+    query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
+    query.leftJoin('card.creator', 'user');
+    query.leftJoinAndSelect('card.category', 'cardCategory');
+    query.where('card.id = :id', { id });
+    query.andWhere('card.creator = :creatorId', { creatorId: user.id });
+    const card = await query.getOne();
+    if (!card) {
+      throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
+    }
+    if (Object.keys(cardCategory).length !== 0) {
       card.category = cardCategory;
     }
     if (title !== undefined) {
@@ -100,15 +109,10 @@ export class CardRepository extends Repository<Card> {
       card.externalUrl = externalUrl;
     }
     try {
-      card.save();
+      await card.save();
     } catch (error) {
       throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
     }
-    // const updateCard = await this.update({ id, creator: user }, updateCardDto);
-    // if (updateCard.affected === 0) {
-    //  throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
-    // }
-    // const card = await this.findOne(id);
     return card;
   }
 
