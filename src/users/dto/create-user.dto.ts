@@ -1,25 +1,15 @@
-import {
-  IsOptional,
-  Length,
-  IsString,
-  Matches,
-  IsEmail,
-} from 'class-validator';
+import { Length, IsString, Matches, IsEmail } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'Healthy Dev te pide que ingreses un email válido' })
   email: string;
 
-  @IsString({
-    message: 'Healthy Dev te pide que nombre de usuario sea alfabético',
-  })
+  @IsString({ message: 'Healthy Dev te pide que ingreses texto en el nombre de usuario.' })
   @Length(4, 20, {
-    message:
-      'Healthy Dev te pide que nombre de usuario posea entre 4 y 20 caracteres',
+    message: 'Healthy Dev te pide que nombre de usuario posea entre 4 y 20 caracteres',
   })
   @Matches(/^((?![\s@]).)*$/, {
-    message:
-      'Healthy Dev te pide que el nombre de usuario no posea "@" ni espacios',
+    message: 'Healthy Dev te pide que el nombre de usuario no posea "@" ni espacios',
   })
   username: string;
 

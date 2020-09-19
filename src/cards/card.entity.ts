@@ -1,3 +1,4 @@
+import { CardCategory } from '../card-categories/card-category.entity';
 import {
   BaseEntity,
   Entity,
@@ -7,6 +8,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  JoinTable,
+  ManyToMany,
+  RelationCount,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 
@@ -35,8 +39,25 @@ export class Card extends BaseEntity {
   updatedAt: Date;
 
   @ManyToOne(
+    type => CardCategory,
+    category => category.id,
+  )
+  category: CardCategory;
+
+  @ManyToOne(
     type => User,
     creator => creator.username,
   )
   creator: User;
+
+  @ManyToMany(
+    type => User,
+    user => user.likes,
+    { eager: true },
+  )
+  @JoinTable()
+  likesBy: User[];
+
+  @RelationCount((card: Card) => card.likesBy)
+  likesCount: number;
 }

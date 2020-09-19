@@ -1,25 +1,23 @@
 
-<h1 align="center">Backend para HealthyDev</h1>
+<h1 align="center"> Backend para HealthyDev 💪</h1>
 
-
-## Descripción
 
  Api Rest para aplicación web HealthyDev.
 
-## Requerimientos
+## Requerimientos 📋
 
 NodeJs
 Docker
 PostgreSQL
 Cuenta en Cloudinary www.cloudinary.com
 
-## Instalación
+## Instalación ⚙️
 
 ```bash
 $ npm install
 ```
 
-## Iniciando la API
+## Iniciando la API 🚀
 
 ```bash
 
@@ -36,7 +34,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-### Configuración
+### Configuración 🔧
 
 ```bash
 
@@ -69,14 +67,14 @@ JWT_EXPIRES={{Tiempo que dura el token}}
 
 ```
 
-## Documentación
+## Documentación 📖
 
 [Link a la documentación](docs/Documentation.md)
 
-## Soporte
+## Soporte ✉️
 
 Contacta con la comunidad FrontEnd Cafe. https://twitter.com/FrontEndCafe
 
-## Licencia
+## Licencia 📄
 
   [MIT licensed](LICENSE).

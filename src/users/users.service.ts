@@ -2,6 +2,8 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
@@ -10,14 +12,15 @@ import { User } from '../users/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from '../auth/dto/new-password.dto';
 import { UserPreviewDto } from './dto/user-preview.dto';
-
-const cloudinary = require('cloudinary').v2;
+import { ImageManagementService } from '../image-management/image-management.service';
 
 @Injectable()
 export class UsersService {
+  private logger = new Logger('UsersService');
   constructor(
     @InjectRepository(User)
     private userRepository: UserRepository,
+    private imageManagementService: ImageManagementService,
   ) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -29,8 +32,7 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<{ id: number }> {
-    let photoUrl =
-      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
+    const photoUrl = this.imageManagementService.placeholderUserUrl;
     return this.userRepository.createUser(createUserDto, photoUrl);
   }
 
@@ -67,49 +69,25 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(
-    updateData: UpdateUserDto,
-    username: string,
-  ): Promise<{ message: string }> {
+  async updateUser(updateData: UpdateUserDto, username: string): Promise<{ message: string }> {
     if (updateData.profilePhoto) {
-      let { profilePhoto } = await this.userRepository.findOne({ username });
+      const { profilePhoto } = await this.userRepository.findOne({ username });
+      try {
+        updateData.profilePhoto = await this.imageManagementService.uploadImage(
+          updateData.profilePhoto,
+        );
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Healthy Dev no pudo guardar nueva imagen de perfil y cancelo cambios',
+        );
+      }
       if (profilePhoto) {
-        const strUrl = profilePhoto.split('/');
-        let imagePublicId = '';
-        strUrl.forEach(item => {
-          if (item.match(/(.*)\.jpg/gm)) {
-            imagePublicId = item.split('.')[0];
-          }
-        });
-        if (imagePublicId !== 'placeholder') {
-          await cloudinary.uploader.destroy(
-            imagePublicId,
-            { resource_type: 'image' },
-            (res: any, error: any) => {
-              if (error.result != 'ok') {
-                throw new Error(error.result);
-              }
-            },
-          );
+        try {
+          await this.imageManagementService.deleteImage(profilePhoto);
+        } catch (error) {
+          this.logger.error(`Failed to delete image "${profilePhoto}"`);
         }
       }
-      await cloudinary.uploader.upload(
-        `data:image/jpg;base64,${updateData.profilePhoto}`,
-        {
-          format: 'jpg',
-          resource_type: 'image',
-          width: 500,
-          height: 500,
-          crop: 'limit',
-          background: '#03111F',
-        },
-        (error: any, response: any) => {
-          if (error) {
-            throw error;
-          }
-          updateData.profilePhoto = response.url;
-        },
-      );
     }
     return this.userRepository.updateUser(updateData, username);
   }

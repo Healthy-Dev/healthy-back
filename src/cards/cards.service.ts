@@ -1,7 +1,9 @@
 import {
   Injectable,
-  NotFoundException,
   UnauthorizedException,
+  NotFoundException,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './card.entity';
@@ -10,14 +12,19 @@ import { GetCardsFilterDto } from './dto/get-cards.dto';
 import { CardPreviewDto } from './dto/card-preview.dto';
 import { CreateCardDto } from './dto/create-card.dto';
 import { User } from '../users/user.entity';
-import { throwError } from 'rxjs';
-import { UserStatus } from '../users/user-status.enum';
-
-const cloudinary = require('cloudinary').v2;
+import { UpdateCardDto } from './dto/update-card.dto';
+import { ImageManagementService } from '../image-management/image-management.service';
+import { CardCategoriesService } from '../card-categories/card-categories.service';
+import { CardCategory } from '../card-categories/card-category.entity';
 
 @Injectable()
 export class CardsService {
-  constructor(@InjectRepository(Card) private cardRepository: CardRepository) {}
+  private logger = new Logger('CardsService');
+  constructor(
+    @InjectRepository(Card) private cardRepository: CardRepository,
+    private imageManagementService: ImageManagementService,
+    private cardCategoriesService: CardCategoriesService,
+  ) {}
 
   async getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return this.cardRepository.getCards(filterDto);
@@ -27,42 +34,75 @@ export class CardsService {
     return this.cardRepository.getCardById(id);
   }
 
-  async createCards(
-    createCardsDto: CreateCardDto,
-    user: User,
-  ): Promise<{ id: number }> {
-    if (user.status === UserStatus.INACTIVO) {
-      throw new UnauthorizedException(
-        'Healthy dev le informa que debe activar la cuenta por email primero.',
-      );
+  async createCards(createCardsDto: CreateCardDto, user: User): Promise<{ id: number }> {
+    const { photo, categoryId } = createCardsDto;
+    const cardCategory = await this.cardCategoriesService.getCardCategoryById(categoryId);
+    if (!cardCategory) {
+      throw new NotFoundException(`Healthy Dev no encontró una categoría con el id ${categoryId}`);
     }
-    if (user.status === UserStatus.BANEADO) {
-      throw new UnauthorizedException(
-        'Healthy dev le informa que su cuenta se encuentra en revisión.',
-      );
-    }
-    const { photo } = createCardsDto;
-    let photoUrl =
-      'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
+    let photoUrl = this.imageManagementService.placeholderCardUrl;
     if (photo) {
-      await cloudinary.uploader.upload(
-        `data:image/jpg;base64,${photo}`,
-        {
-          format: 'jpg',
-          resource_type: 'image',
-          width: 500,
-          height: 500,
-          crop: 'limit',
-          background: '#03111F',
-        },
-        (error: any, response: any) => {
-          if (error) {
-            throw error;
-          }
-          photoUrl = response.url;
-        },
-      );
+      photoUrl = await this.imageManagementService.uploadImage(photo);
     }
-    return this.cardRepository.createCards(createCardsDto, user, photoUrl);
+    return this.cardRepository.createCards(createCardsDto, user, photoUrl, cardCategory);
+  }
+
+  async updateCards(updateCardDto: UpdateCardDto, user: User, id: number): Promise<Card> {
+    const { categoryId } = updateCardDto;
+    let cardCategory = {} as CardCategory;
+    if (categoryId) {
+      cardCategory = await this.cardCategoriesService.getCardCategoryById(categoryId);
+      if (!cardCategory) {
+        throw new NotFoundException(
+          `Healthy Dev no encontró una categoría con el id ${categoryId}`,
+        );
+      }
+    }
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(`Healthy Dev no pudo modificar la card con el id ${id}`);
+    }
+    if (updateCardDto.photo) {
+      try {
+        updateCardDto.photo = await this.imageManagementService.uploadImage(updateCardDto.photo);
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Healthy Dev no pudo guardar nueva imagen y cancelo cambios',
+        );
+      }
+      if (card.photo) {
+        try {
+          await this.imageManagementService.deleteImage(card.photo);
+        } catch (error) {
+          this.logger.error(`Failed to delete image "${card.photo}"`);
+        }
+      }
+    }
+    return this.cardRepository.updateCards(updateCardDto, id, user, cardCategory);
+  }
+
+  async deleteCard(user: User, id: number): Promise<{ message: string }> {
+    const card = await this.cardRepository.findOne({ id, creator: user });
+    if (!card) {
+      throw new NotFoundException(`Healthy Dev no pudo eliminar la card con el id ${id}`);
+    }
+    if (card.photo) {
+      try {
+        await this.imageManagementService.deleteImage(card.photo);
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Healthy Dev no pudo eliminar imagen de card y cancelo eliminación',
+        );
+      }
+    }
+    return this.cardRepository.deleteCard(id, user);
+  }
+
+  async addLike(user: User, id: number): Promise<{ message: string }> {
+    return this.cardRepository.addLike(user, id);
+  }
+
+  async deleteLike(user: User, id: number): Promise<{ message: string }> {
+    return this.cardRepository.deleteLike(user, id);
   }
 }

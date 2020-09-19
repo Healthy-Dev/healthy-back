@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CardsModule } from './cards/cards.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ImageManagementModule } from './image-management/image-management.module';
+import { CardCategoriesModule } from './card-categories/card-categories.module';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -15,7 +17,7 @@ cloudinary.config({
 });
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), CardsModule, AuthModule, UsersModule],
+  imports: [TypeOrmModule.forRoot(), CardsModule, AuthModule, UsersModule, ImageManagementModule, CardCategoriesModule],
   controllers: [AppController],
   providers: [AppService],
 })
