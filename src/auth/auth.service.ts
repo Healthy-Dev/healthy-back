@@ -6,12 +6,15 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './strategy/jwt-payload.interface';
 import { NewPasswordDto } from './dto/new-password.dto';
+import { Mail } from '../mail/mail.interface';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async signUp(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
