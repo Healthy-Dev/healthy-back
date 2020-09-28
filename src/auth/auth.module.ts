@@ -6,11 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { MailModule } from '../mail/mail.module';
+import { TokensModule } from '../tokens/tokens.module';
 
 @Module({
   imports: [
     UsersModule,
     MailModule,
+    TokensModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,

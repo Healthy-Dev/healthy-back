@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ImageManagementModule } from './image-management/image-management.module';
 import { CardCategoriesModule } from './card-categories/card-categories.module';
 import { MailModule } from './mail/mail.module';
+import { TokensModule } from './tokens/tokens.module';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -18,7 +19,16 @@ cloudinary.config({
 });
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), CardsModule, AuthModule, UsersModule, ImageManagementModule, CardCategoriesModule, MailModule],
+  imports: [
+    TypeOrmModule.forRoot(),
+    CardsModule,
+    AuthModule,
+    UsersModule,
+    ImageManagementModule,
+    CardCategoriesModule,
+    MailModule,
+    TokensModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

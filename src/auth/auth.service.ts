@@ -1,4 +1,10 @@
-import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
@@ -8,17 +14,24 @@ import { JwtPayload } from './strategy/jwt-payload.interface';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { Mail } from '../mail/mail.interface';
 import { MailService } from '../mail/mail.service';
+import { TokensService } from '../tokens/tokens.service';
+import { UserStatus } from '../users/user-status.enum';
+import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto';
+import { TokenType } from '../tokens/token-type.enum';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger('AuthService');
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly tokensService: TokensService,
   ) {}
 
   async signUp(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
-    const { username, password } = createUserDto;
+    const { username, password, email } = createUserDto;
     const salt = await bcrypt.genSalt();
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
     const userId = await this.usersService.createUser(createUserDto);
@@ -27,8 +40,75 @@ export class AuthService {
         'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
       );
     }
+    try {
+      this.sendEmailVerification(username, email);
+    } catch (error) {
+      this.logger.error(`Error sending verification email in sign up: ${error}`);
+    }
     const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
     return this.signIn(authCredentialsDto);
+  }
+
+  async resendVerificationAccount(email: string) {
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    if (user.status !== UserStatus.INACTIVO) {
+      throw new ConflictException('Healthy Dev le informa que la cuenta ya esta activa');
+    }
+    const nameOrUsername = user.name ? user.name : user.username;
+    try {
+      await this.sendEmailVerification(nameOrUsername, email);
+    } catch (error) {
+      this.logger.error(`Error sending verification email in resend verification: ${error}`);
+      throw new InternalServerErrorException(
+        'Healthy Dev le informa que no se ha podido enviar email. Intentelo nuevamente más tarde.',
+      );
+    }
+    return {
+      message: 'Healthy Dev le informa que se reenviado el mail de verificación correctamente',
+    };
+  }
+
+  async verifyAccount(token: string): Promise<{ message: string }> {
+    let tokenPayload: TokenPayload;
+    try {
+      tokenPayload = await this.tokensService.verifyEncryptedToken(token);
+    } catch (error) {
+      throw new UnauthorizedException(
+        'Healthy Dev le informa que no ha podido verificar cuenta, por favor solicite nuevamente envio de verificación',
+      );
+    }
+    if (tokenPayload.type !== TokenType.VERIFY_EMAIL) {
+      throw new UnauthorizedException(
+        'Healthy Dev le informa que no ha podido verificar cuenta, por favor solicite nuevamente envio de verificación',
+      );
+    }
+    const user = await this.usersService.getUserByEmail(tokenPayload.email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    if (user.status !== UserStatus.INACTIVO) {
+      throw new ConflictException('Healthy Dev le informa que la cuenta ya esta activa');
+    }
+    user.status = UserStatus.ACTIVO;
+    await user.save();
+    return { message: 'Healthy Dev le informa que el usuario fue activado correctamente.' };
+  }
+
+  async sendEmailVerification(nameOrUsername: string, email: string): Promise<boolean> {
+    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.VERIFY_EMAIL, email };
+    const activationToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
+    const activationLink = `https://${process.env.HOST}:${process.env.PORT}/v1/auth/verify/?token=${activationToken}`;
+    const subject = 'Activación de cuenta';
+    const to = email;
+    const content = `<p>Hola ${nameOrUsername}!</p>
+                     <p>Para activar cuenta en Healthy Dev presione <a href="${activationLink}">aquí</a></p>
+    `;
+    const mail: Mail = { to, subject, content };
+    const sent = await this.mailService.sendMail(mail);
+    return sent;
   }
 
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
