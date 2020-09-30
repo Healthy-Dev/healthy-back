@@ -374,6 +374,8 @@ Registra un nuevo usuario
 }
 ```
 
+Nota: También envia email de verificación de cuenta para activar usuario.
+
 **Ejemplo:**
 
 ```bash
@@ -391,6 +393,80 @@ fetch(
                 “password”: “ SuperPass21“
             }
         )
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### GET “{{URL}}/v1/auth/resend-verification”
+
+Reenvio de email de verificación de cuenta para activar usuario.
+
+**Body:**
+
+```bash
+{
+    email: email asociado a cuenta (Obligatorio - formato de email válido),
+}
+```
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que se ha reenviado el email de verificación correctamente”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/auth/resend-verification”,
+    {
+        method: “GET”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+                “email”: “juanperez@gmail.com“
+            }
+        )
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### GET “{{URL}}/v1/auth/verify”
+
+Verificación de cuenta de email para activar usuario.
+
+**Body:**
+**Parámetros:**
+
+    Enviados por URL
+
+    - token: token encriptado previamente enviado por email para activar usuario (Obligatorio)
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que el usuario fue activado correctamente.”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/auth/verify/?token=xxxxxxxxxxxxxxxx”,
+    {
+        method: “GET”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
     },
 )
 .then(“// Manejo de Respuesta”);

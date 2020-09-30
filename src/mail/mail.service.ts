@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { Mail } from './mail.interface';
-
 @Injectable()
 export class MailService {
   private logger = new Logger('MailService');
@@ -13,8 +12,13 @@ export class MailService {
       port: +process.env.EMAIL_PORT,
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
+        type: 'OAuth2',
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        clientId: process.env.EMAIL_CLIENT_ID,
+        clientSecret: process.env.EMAIL_CLIENT_SECRET,
+        refreshToken: process.env.EMAIL_REFRESH_TOKEN,
+        accessToken: process.env.EMAIL_ACCESS_TOKEN,
+        expires: process.env.EMAIL_TOKEN_EXPIRES,
       },
     });
   }

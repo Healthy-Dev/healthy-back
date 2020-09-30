@@ -48,7 +48,7 @@ export class AuthService {
     return this.signIn(authCredentialsDto);
   }
 
-  async resendVerificationAccount(email: string) {
+  async resendVerificationAccount(email: string): Promise<{ message: string }> {
     const user = await this.usersService.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
@@ -57,16 +57,14 @@ export class AuthService {
       throw new ConflictException('Healthy Dev le informa que la cuenta ya esta activa');
     }
     const nameOrUsername = user.name ? user.name : user.username;
-    try {
-      await this.sendEmailVerification(nameOrUsername, email);
-    } catch (error) {
-      this.logger.error(`Error sending verification email in resend verification: ${error}`);
+    const sent = await this.sendEmailVerification(nameOrUsername, email);
+    if (!sent) {
       throw new InternalServerErrorException(
-        'Healthy Dev le informa que no se ha podido enviar email. Intentelo nuevamente más tarde.',
+        'Healthy Dev le informa que no se ha podido enviar email. Inténtelo nuevamente más tarde',
       );
     }
     return {
-      message: 'Healthy Dev le informa que se reenviado el mail de verificación correctamente',
+      message: 'Healthy Dev le informa que se ha reenviado el email de verificación correctamente',
     };
   }
 
@@ -99,12 +97,14 @@ export class AuthService {
   async sendEmailVerification(nameOrUsername: string, email: string): Promise<boolean> {
     const tokenPayloadBase: TokenPayloadBase = { type: TokenType.VERIFY_EMAIL, email };
     const activationToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
-    const activationLink = `https://${process.env.HOST}:${process.env.PORT}/v1/auth/verify/?token=${activationToken}`;
-    const sent = await this.mailTemplatesService.sendMailVerify(
-      email,
-      nameOrUsername,
-      activationLink,
-    );
+    const activationLink = `${process.env.CLIENT_URL_VERIFICATION}?token=${activationToken}`;
+    let sent;
+    try {
+      sent = await this.mailTemplatesService.sendMailVerify(email, nameOrUsername, activationLink);
+    } catch (error) {
+      this.logger.error(`Failed send mail ${error}`);
+      return false;
+    }
     return sent;
   }
 
