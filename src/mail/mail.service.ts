@@ -12,7 +12,7 @@ export class MailService {
       port: +process.env.EMAIL_PORT,
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
-        type: 'OAuth2',
+        type: process.env.EMAIL_AUTH_TYPE,
         user: process.env.EMAIL_USERNAME,
         clientId: process.env.EMAIL_CLIENT_ID,
         clientSecret: process.env.EMAIL_CLIENT_SECRET,
