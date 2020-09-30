@@ -12,13 +12,12 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './strategy/jwt-payload.interface';
 import { NewPasswordDto } from './dto/new-password.dto';
-import { Mail } from '../mail/mail.interface';
-import { MailService } from '../mail/mail.service';
 import { TokensService } from '../tokens/tokens.service';
 import { UserStatus } from '../users/user-status.enum';
 import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto';
 import { TokenType } from '../tokens/token-type.enum';
 import { Logger } from '@nestjs/common';
+import { MailTemplatesService } from '../mail-templates/mail-templates.service';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +25,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
+    private readonly mailTemplatesService: MailTemplatesService,
     private readonly tokensService: TokensService,
   ) {}
 
@@ -101,13 +100,11 @@ export class AuthService {
     const tokenPayloadBase: TokenPayloadBase = { type: TokenType.VERIFY_EMAIL, email };
     const activationToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
     const activationLink = `https://${process.env.HOST}:${process.env.PORT}/v1/auth/verify/?token=${activationToken}`;
-    const subject = 'Activación de cuenta';
-    const to = email;
-    const content = `<p>Hola ${nameOrUsername}!</p>
-                     <p>Para activar cuenta en Healthy Dev presione <a href="${activationLink}">aquí</a></p>
-    `;
-    const mail: Mail = { to, subject, content };
-    const sent = await this.mailService.sendMail(mail);
+    const sent = await this.mailTemplatesService.sendMailVerify(
+      email,
+      nameOrUsername,
+      activationLink,
+    );
     return sent;
   }
 
