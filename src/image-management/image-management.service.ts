@@ -71,7 +71,7 @@ export class ImageManagementService {
     if (deleteError) {
       throw deleteError;
     }
-    if (result !== 'Ok') {
+    if (result !== 'ok') {
       throw new Error(result);
     }
     return true;
