@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JWE, JWK, JWT } from 'jose';
+import { runInThisContext } from 'vm';
 import { TokenPayload, TokenPayloadBase } from './dto/token-payload.dto';
 
 @Injectable()
 export class TokensService {
-  private readonly bitLength = 2048;
-  private readonly algorithm = 'HS512';
-  private readonly expires = '1 hour';
+  private readonly bitLength = +process.env.TOKENS_BIT_LENGTH;
+  private readonly algorithm = process.env.TOKENS_ALGORITHM;
+  private readonly expires = process.env.TOKENS_EXPIRES;
   private readonly jwtKey = JWK.generateSync('oct', this.bitLength, {
     use: 'sig',
   });

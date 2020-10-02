@@ -6,11 +6,12 @@ const cropType = 'limit';
 const backgroundCrop = '#03111F';
 @Injectable()
 export class ImageManagementService {
-  readonly optionsDefault = {
+  private readonly deletedSuccessfully = 'ok';
+  private readonly optionsDefault = {
     format: 'jpg',
     resource_type: 'image',
   };
-  readonly optionsCrop = {
+  private readonly optionsCrop = {
     format: 'jpg',
     resource_type: 'image',
     width: widthCrop,
@@ -71,7 +72,7 @@ export class ImageManagementService {
     if (deleteError) {
       throw deleteError;
     }
-    if (result !== 'Ok') {
+    if (result !== this.deletedSuccessfully) {
       throw new Error(result);
     }
     return true;

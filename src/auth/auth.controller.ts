@@ -31,7 +31,7 @@ export class AuthController {
     return this.authService.signUp(createUserDto);
   }
 
-  @Get('v1/auth/verify/')
+  @Post('v1/auth/verify/')
   async verifyAccount(@Query(ValidationPipe) query: TokenDto): Promise<{ message: string }> {
     return this.authService.verifyAccount(query.token);
   }

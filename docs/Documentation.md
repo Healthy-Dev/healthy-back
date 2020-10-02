@@ -438,7 +438,7 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/auth/verify”
+### POST “{{URL}}/v1/auth/verify”
 
 Verificación de cuenta de email para activar usuario.
 
@@ -463,7 +463,7 @@ Verificación de cuenta de email para activar usuario.
 fetch(
     “https://healthydev.herokuapp.com/v1/auth/verify/?token=xxxxxxxxxxxxxxxx”,
     {
-        method: “GET”,
+        method: “POST”,
         headers:{
                 'Content-Type': 'application/json',
         },
