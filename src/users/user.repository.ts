@@ -1,10 +1,7 @@
 import { Repository, EntityRepository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from '../auth/dto/new-password.dto';
 import { UserStatus } from './user-status.enum';
@@ -23,17 +20,13 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async createUser(
-    createUserDto: CreateUserDto,
-    photoUrl: string,
-  ): Promise<{ id: number }> {
+  async createUser(createUserDto: CreateUserDto, photoUrl: string): Promise<{ id: number }> {
     const { email, username, password } = createUserDto;
     const user = new User();
     user.email = email;
     user.username = username;
     user.password = password;
     user.profilePhoto = photoUrl;
-    user.status = UserStatus.ACTIVO;
     try {
       await user.save();
     } catch (error) {
@@ -57,10 +50,7 @@ export class UserRepository extends Repository<User> {
     return { id: user.id };
   }
 
-  async updateUser(
-    updateData: UpdateUserDto,
-    username: string,
-  ): Promise<{ message: string }> {
+  async updateUser(updateData: UpdateUserDto, username: string): Promise<{ message: string }> {
     await this.update({ username }, updateData);
     return {
       message: 'El usuario ha sido actualizado con éxito',

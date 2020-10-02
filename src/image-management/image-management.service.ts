@@ -6,11 +6,12 @@ const cropType = 'limit';
 const backgroundCrop = '#03111F';
 @Injectable()
 export class ImageManagementService {
-  readonly optionsDefault = {
+  private readonly deletedSuccessfully = 'ok';
+  private readonly optionsDefault = {
     format: 'jpg',
     resource_type: 'image',
   };
-  readonly optionsCrop = {
+  private readonly optionsCrop = {
     format: 'jpg',
     resource_type: 'image',
     width: widthCrop,
@@ -30,21 +31,29 @@ export class ImageManagementService {
       ? image
       : `data:image/jpg;base64,${image}`;
     let urlImage = '';
+    let uploadError;
     await cloudinary.uploader.upload(
       imageEncodeBase64,
       crop ? this.optionsCrop : this.optionsDefault,
       (error: any, response: any) => {
         if (error) {
-          throw error;
+          uploadError = error;
         }
-        urlImage = response.url;
+        if (response) {
+          urlImage = response.url;
+        }
       },
     );
+    if (uploadError) {
+      throw uploadError;
+    }
     return urlImage;
   }
 
   async deleteImage(imageUrl: string): Promise<boolean> {
     const imageName = this.getImageName(imageUrl);
+    let result = '';
+    let deleteError;
     if (!imageName || this.isPlaceholderImage(imageUrl)) {
       return false;
     }
@@ -53,13 +62,19 @@ export class ImageManagementService {
       { resource_type: 'image' },
       (error: any, res: any) => {
         if (error) {
-          throw error;
+          deleteError = error;
         }
-        if (res.result !== 'ok') {
-          throw new Error(res.result);
+        if (res.result) {
+          result = res.result;
         }
       },
     );
+    if (deleteError) {
+      throw deleteError;
+    }
+    if (result !== this.deletedSuccessfully) {
+      throw new Error(result);
+    }
     return true;
   }
 
