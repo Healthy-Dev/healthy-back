@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JWE, JWK, JWT } from 'jose';
-import { runInThisContext } from 'vm';
 import { TokenPayload, TokenPayloadBase } from './dto/token-payload.dto';
 
 @Injectable()
