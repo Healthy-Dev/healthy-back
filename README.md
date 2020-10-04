@@ -1,8 +1,6 @@
-
 <h1 align="center"> Backend para HealthyDev 💪</h1>
 
-
- Api Rest para aplicación web HealthyDev.
+Api Rest para aplicación web HealthyDev.
 
 ## Requerimientos 📋
 
@@ -65,6 +63,32 @@ CLOUDINARY_API_SECRET=
 JWT_SECRET_KEY={{Texto de seguridad para desencriptar el token}}
 JWT_EXPIRES={{Tiempo que dura el token}}
 
+# Las siguientes variables son necesarias para el envio de emails usando OAuth2 (verificación email y olvide contraseña)
+
+EMAIL_AUTH_TYPE=
+EMAIL_SERVICE=
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_SECURE=
+EMAIL_ALIAS=
+EMAIL_USERNAME=
+EMAIL_CLIENT_ID=
+EMAIL_CLIENT_SECRET=
+EMAIL_REFRESH_TOKEN=
+EMAIL_ACCESS_TOKEN=
+EMAIL_TOKEN_EXPIRES=
+
+# Las siguientes variables son necesarias para los destinos de los links del email (verificación email y olvide contraseña)
+
+CLIENT_URL_VERIFICATION=
+CLIENT_URL_RESET_PASSWORD=
+
+# Las siguientes variables son necesarias la creación de tokens encriptados de verificación email y olvide contraseña
+
+TOKENS_BIT_LENGTH =
+TOKENS_ALGORITHM =
+TOKENS_EXPIRES =
+
 ```
 
 ## Documentación 📖
@@ -77,4 +101,4 @@ Contacta con la comunidad FrontEnd Cafe. https://twitter.com/FrontEndCafe
 
 ## Licencia 📄
 
-  [MIT licensed](LICENSE).
+[MIT licensed](LICENSE).
