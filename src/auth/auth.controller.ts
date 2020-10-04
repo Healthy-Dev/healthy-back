@@ -1,4 +1,13 @@
-import { Controller, Post, UseGuards, Body, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  ValidationPipe,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -8,6 +17,8 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { GetUser } from './get-user.decorator';
 import { User } from '../users/user.entity';
+import { TokenDto } from './dto/token.dto';
+import { EmailDto } from './dto/resend-verification.dto';
 
 @Controller()
 export class AuthController {
@@ -18,6 +29,18 @@ export class AuthController {
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signUp(createUserDto);
+  }
+
+  @Post('v1/auth/verify/')
+  async verifyAccount(@Query(ValidationPipe) query: TokenDto): Promise<{ message: string }> {
+    return this.authService.verifyAccount(query.token);
+  }
+
+  @Get('/v1/auth/resend-verification/')
+  async resendVerificationAccount(
+    @Body(ValidationPipe) emailDto: EmailDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resendVerificationAccount(emailDto.email);
   }
 
   @Post('v1/auth/signin')
