@@ -669,3 +669,89 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
+
+### GET “{{URL}}/v1/auth/forgot-password”
+
+Envio de email crear nueva contraseña usuario.
+
+**Body:**
+
+```bash
+{
+    email: email asociado a cuenta (Obligatorio - formato de email válido),
+}
+```
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que se ha enviado el email para crear nueva contraseña correctamente”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/auth/forgot-password”,
+    {
+        method: “GET”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+                “email”: “juanperez@gmail.com“
+            }
+        )
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### POST “{{URL}}/v1/auth/reset-password”
+
+Cambiar contraseña de usuario solicitada por email
+
+**Body:**
+
+```bash
+{
+    password: contraseña (Obligatorio - al menos una mayúscula, una minúscula y un número, sin espacios - 8 a 250 caracteres),
+}
+```
+
+**Parámetros:**
+
+    Enviados por URL
+
+    - token: token encriptado previamente enviado por email para crear nueva contraseña (Obligatorio)
+
+**Respuesta:**
+
+```bash
+{
+    message: “Contraseña Cambiada con éxito.”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/auth/reset-password/?token=xxxxxxxxxxxxxxxx”,
+    {
+        method: “POST”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+            “password”: “SuperPass21“
+            }
+        )
+    },
+)
+.then(“// Manejo de Respuesta”);
+```

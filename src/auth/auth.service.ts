@@ -18,6 +18,8 @@ import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto'
 import { TokenType } from '../tokens/token-type.enum';
 import { Logger } from '@nestjs/common';
 import { MailTemplatesService } from '../mail-templates/mail-templates.service';
+import { TokenDto } from './dto/token.dto';
+import { EmailDto } from './dto/resend-verification.dto';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +50,8 @@ export class AuthService {
     return this.signIn(authCredentialsDto);
   }
 
-  async resendVerificationAccount(email: string): Promise<{ message: string }> {
+  async resendVerificationAccount(emailDto: EmailDto): Promise<{ message: string }> {
+    const { email } = emailDto;
     const user = await this.usersService.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
@@ -68,10 +71,29 @@ export class AuthService {
     };
   }
 
-  async verifyAccount(token: string): Promise<{ message: string }> {
+  async forgotPassword(emailDto: EmailDto): Promise<{ message: string }> {
+    const { email } = emailDto;
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    const nameOrUsername = user.name ? user.name : user.username;
+    const sent = await this.sendEmailForgotPassword(nameOrUsername, email);
+    if (!sent) {
+      throw new InternalServerErrorException(
+        'Healthy Dev le informa que no se ha podido enviar email. Inténtelo nuevamente más tarde',
+      );
+    }
+    return {
+      message:
+        'Healthy Dev le informa que se ha enviado el email para crear nueva contraseña correctamente',
+    };
+  }
+
+  async verifyAccount(tokenDto: TokenDto): Promise<{ message: string }> {
     let tokenPayload: TokenPayload;
     try {
-      tokenPayload = await this.tokensService.verifyEncryptedToken(token);
+      tokenPayload = await this.tokensService.verifyEncryptedToken(tokenDto.token);
     } catch (error) {
       throw new UnauthorizedException(
         'Healthy Dev le informa que no ha podido verificar cuenta, por favor solicite nuevamente envio de verificación',
@@ -108,6 +130,24 @@ export class AuthService {
     return sent;
   }
 
+  async sendEmailForgotPassword(nameOrUsername: string, email: string): Promise<boolean> {
+    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.RESET_PASSWORD, email };
+    const resetPasswordToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
+    const resetPasswordLink = `${process.env.CLIENT_URL_RESET_PASSWORD}?token=${resetPasswordToken}`;
+    let sent;
+    try {
+      sent = await this.mailTemplatesService.sendMailResetPassword(
+        email,
+        nameOrUsername,
+        resetPasswordLink,
+      );
+    } catch (error) {
+      this.logger.error(`Failed send mail ${error}`);
+      return false;
+    }
+    return sent;
+  }
+
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
     const username = await this.validateUserPassword(authCredentialsDto);
     if (!username) {
@@ -125,6 +165,32 @@ export class AuthService {
       return user.username;
     }
     return null;
+  }
+
+  async resetPassword(
+    newPassword: NewPasswordDto,
+    tokenDto: TokenDto,
+  ): Promise<{ message: string }> {
+    let tokenPayload: TokenPayload;
+    try {
+      tokenPayload = await this.tokensService.verifyEncryptedToken(tokenDto.token);
+    } catch (error) {
+      throw new UnauthorizedException(
+        'Healthy Dev le informa que no ha podido cambiar la contraseña, por favor solicite nuevamente envio para realizar nueva contraseña',
+      );
+    }
+    if (tokenPayload.type !== TokenType.RESET_PASSWORD) {
+      throw new UnauthorizedException(
+        'Healthy Dev le informa que no ha podido cambiar la contraseña, por favor solicite nuevamente envio para realizar nueva contraseña',
+      );
+    }
+    const user = await this.usersService.getUserByEmail(tokenPayload.email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    const salt = await bcrypt.genSalt();
+    newPassword.password = await bcrypt.hash(newPassword.password, salt);
+    return this.usersService.changePassword(newPassword, user.username);
   }
 
   async changePassword(
