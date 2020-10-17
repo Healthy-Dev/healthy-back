@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './strategy/jwt-payload.interface';
+import { JwtPayloadBase } from './strategy/jwt-payload.interface';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { TokensService } from '../tokens/tokens.service';
 import { UserStatus } from '../users/user-status.enum';
@@ -153,7 +153,7 @@ export class AuthService {
     if (!username) {
       throw new UnauthorizedException('Verifique los datos ingresados');
     }
-    const payload: JwtPayload = { username };
+    const payload: JwtPayloadBase = { username };
     const accessToken = await this.jwtService.sign(payload);
     return { accessToken };
   }

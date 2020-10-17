@@ -61,7 +61,9 @@ export class UserRepository extends Repository<User> {
     newPassword: NewPasswordDto,
     username: string,
   ): Promise<{ message: string }> {
-    await this.update({ username }, newPassword);
+    const passwordChangedAt = new Date();
+    const { password } = newPassword;
+    await this.update({ username }, {password, passwordChangedAt});
     return {
       message: 'Contraseña Cambiada con éxito.',
     };
