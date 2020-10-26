@@ -398,17 +398,15 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/auth/resend-verification”
+### GET “{{URL}}/v1/auth/resend-verification/:email”
 
 Reenvio de email de verificación de cuenta para activar usuario.
 
-**Body:**
+**Parámetros:**
 
-```bash
-{
-    email: email asociado a cuenta (Obligatorio - formato de email válido),
-}
-```
+    Enviado por URL
+
+    - email: email asociado a cuenta (Obligatorio - formato de email válido),
 
 **Respuesta:**
 
@@ -422,17 +420,12 @@ Reenvio de email de verificación de cuenta para activar usuario.
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/auth/resend-verification”,
+    “https://healthydev.herokuapp.com/v1/auth/resend-verification/juanperez@gmail.com”,
     {
         method: “GET”,
         headers:{
                 'Content-Type': 'application/json',
         },
-        body: JSON.stringify(
-            {
-                “email”: “juanperez@gmail.com“
-            }
-        )
     },
 )
 .then(“// Manejo de Respuesta”);
@@ -670,17 +663,15 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/auth/forgot-password”
+### GET “{{URL}}/v1/auth/forgot-password/:email”
 
 Envio de email crear nueva contraseña usuario.
 
-**Body:**
+**Parámetros:**
 
-```bash
-{
-    email: email asociado a cuenta (Obligatorio - formato de email válido),
-}
-```
+    Enviado por URL
+
+    - email: email asociado a cuenta (Obligatorio - formato de email válido),
 
 **Respuesta:**
 
@@ -694,17 +685,12 @@ Envio de email crear nueva contraseña usuario.
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/auth/forgot-password”,
+    “https://healthydev.herokuapp.com/v1/auth/forgot-password/juanperez@gmail.com”,
     {
         method: “GET”,
         headers:{
                 'Content-Type': 'application/json',
         },
-        body: JSON.stringify(
-            {
-                “email”: “juanperez@gmail.com“
-            }
-        )
     },
 )
 .then(“// Manejo de Respuesta”);
