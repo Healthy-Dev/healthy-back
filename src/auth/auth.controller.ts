@@ -36,15 +36,15 @@ export class AuthController {
     return this.authService.verifyAccount(tokenDto);
   }
 
-  @Get('/v1/auth/resend-verification/')
+  @Get('/v1/auth/resend-verification/:email')
   async resendVerificationAccount(
-    @Body(ValidationPipe) emailDto: EmailDto,
+    @Param(ValidationPipe) emailDto: EmailDto,
   ): Promise<{ message: string }> {
     return this.authService.resendVerificationAccount(emailDto);
   }
 
-  @Get('/v1/auth/forgot-password/')
-  async forgotPassword(@Body(ValidationPipe) emailDto: EmailDto): Promise<{ message: string }> {
+  @Get('/v1/auth/forgot-password/:email')
+  async forgotPassword(@Param(ValidationPipe) emailDto: EmailDto): Promise<{ message: string }> {
     return this.authService.forgotPassword(emailDto);
   }
 
