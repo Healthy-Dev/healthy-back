@@ -38,8 +38,8 @@ export class CardRepository extends Repository<Card> {
       query.leftJoinAndSelect('card.category', 'categories');
     }
     if (expand && expand.includes(CardExpand.CREATOR)) {
-      query.addSelect(['user.id', 'user.name', 'user.profilePhoto']);
-      query.leftJoin('card.creator', 'user');
+      query.addSelect(['user_creator.id', 'user_creator.name', 'user_creator.profilePhoto']);
+      query.leftJoin('card.creator', 'user_creator');
     }
     if (expand && expand.includes(CardExpand.LIKES)) {
       query.addSelect(['user_like.id', 'user_like.username']);
