@@ -18,6 +18,8 @@ Muestra por defecto las últimas 15 cards creadas.
 
     - search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
 
+    - expand: listado de posibles expansiones del recurso separados por coma (Opcional, posibles valores: category,creator,likes)
+
         Nota: Considerando paginación o infinite scroll, definimos de cuantos registros queremos solicitar (limit por defecto 15) y tenemos un número de página (page), entonces el offset =  page * limit, si se inicia desde nroPagina = 0.
 
 **Respuesta:**
@@ -32,11 +34,13 @@ Array de objetos, donde cada objeto devuelve:
 }
 ```
 
+    Nota: Si incluye expand en los parámetros, incluira la expansión solicitada
+
 **Ejemplo:**
 
 ```bash
 fetch(
-      “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST”,
+      “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST&expand=creator,likes”,
       {
         method: “GET”,
       },
@@ -626,6 +630,8 @@ fetch(
 
 Cambiar contraseña de usuario actual
 
+    Nota: El cambio de contraseña invalidará todos los tokens generados previos al cambio.
+
 **Body:**
 
 ```bash
@@ -699,6 +705,8 @@ fetch(
 ### POST “{{URL}}/v1/auth/reset-password”
 
 Cambiar contraseña de usuario solicitada por email
+
+    Nota: El cambio de contraseña invalidará todos los tokens generados previos al cambio.
 
 **Body:**
 
