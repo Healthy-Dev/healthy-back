@@ -52,7 +52,7 @@ export class CardRepository extends Repository<Card> {
     return headerCards;
   }
 
-  async createCards(
+  async createCard(
     createCardDto: CreateCardDto,
     user: User,
     photoUrl: string,
@@ -87,7 +87,7 @@ export class CardRepository extends Repository<Card> {
     return card;
   }
 
-  async updateCards(
+  async updateCard(
     updateCardDto: UpdateCardDto,
     id: number,
     user: User,

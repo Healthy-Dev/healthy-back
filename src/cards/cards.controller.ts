@@ -52,11 +52,11 @@ export class CardsController {
   @Post('v1/cards')
   @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard())
-  createCards(
+  createCard(
     @Body() createCardsDto: CreateCardDto,
     @GetUser(new UserActiveValidationPipe()) user: User,
   ): Promise<{ id: number }> {
-    return this.cardsService.createCards(createCardsDto, user);
+    return this.cardsService.createCard(createCardsDto, user);
   }
 
   @Put('v1/cards/:id')
@@ -66,7 +66,7 @@ export class CardsController {
     }),
   )
   @UseGuards(AuthGuard())
-  updateCards(
+  updateCard(
     @Body() updateCardDto: UpdateCardDto,
     @GetUser(new UserActiveValidationPipe()) user: User,
     @Param('id', ParseIntPipe) id: number,
@@ -76,7 +76,7 @@ export class CardsController {
         'Debe modificar al menos alguno de los campos, titulo, descripcion, imagen, link o categoría.',
       );
     }
-    return this.cardsService.updateCards(updateCardDto, user, id);
+    return this.cardsService.updateCard(updateCardDto, user, id);
   }
 
   @Delete('v1/cards/:id')
