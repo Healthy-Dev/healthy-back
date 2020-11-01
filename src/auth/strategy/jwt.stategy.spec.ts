@@ -2,8 +2,8 @@ import { UsersService } from '../../users/users.service';
 import { TestingModule, Test } from '@nestjs/testing';
 import { JwtStrategy } from './jwt.strategy';
 import { User } from '../../users/user.entity';
-import { JwtPayload } from '../../../dist/auth/strategy/jwt-payload.interface';
 import { UnauthorizedException } from '@nestjs/common';
+import { JwtPayload } from './jwt-payload.interface';
 
 const mockUserService = () => ({
     getUserByUsername: jest.fn(),
@@ -28,7 +28,7 @@ describe('JwtStrategy', () => {
   });
   describe('validate',  () => {
     it('validates and returns the user based on JWT payload', async () => {
-      const mockPayload: JwtPayload = {username: 'TestUsername'};
+      const mockPayload: JwtPayload = {username: 'TestUsername', iat: 123, exp: 321};
       const user = new User();
       user.username = 'TestUser';
 
@@ -40,7 +40,7 @@ describe('JwtStrategy', () => {
 
     });
     it('throws an unauthorized exception as user cannot by found', async () => {
-      const mockPayload: JwtPayload = {username: 'TestUsername'};
+      const mockPayload: JwtPayload = {username: 'TestUsername', iat: 123, exp: 321};
       usersService.getUserByUsername.mockResolvedValue(null);
       expect(jwtStrategy.validate(mockPayload)).rejects.toThrow(UnauthorizedException);
     });

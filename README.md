@@ -91,6 +91,17 @@ TOKENS_EXPIRES =
 
 ```
 
+## Test 🛠️
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+```
+
 ## Documentación 📖
 
 [Link a la documentación](docs/Documentation.md)
