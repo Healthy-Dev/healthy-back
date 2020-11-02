@@ -18,6 +18,7 @@ import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto'
 import { TokenType } from '../tokens/token-type.enum';
 import { Logger } from '@nestjs/common';
 import { MailTemplatesService } from '../mail-templates/mail-templates.service';
+import {generate} from 'generate-password';
 
 @Injectable()
 export class AuthService {
@@ -134,5 +135,19 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     newPassword.password = await bcrypt.hash(newPassword.password, salt);
     return this.usersService.changePassword(newPassword, username);
+  }
+
+  async socialLoginAuth(user: any): Promise<{ accessToken: string }> {
+    const username = user.email.split("@")[0];
+    const password = generate({ length: 20, numbers: true })
+    const findUser = await this.usersService.getUserByEmail(user.email);
+    if (!findUser) {
+      await this.signUp({email: user.email, username, password})
+    } else {
+      const { username } = await this.usersService.getUserByUsernameOrEmail(user.email);
+      const payload: JwtPayload = { username };
+      const accessToken = await this.jwtService.sign(payload);
+      return { accessToken };
+    }
   }
 }

@@ -7,6 +7,8 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { TokensModule } from '../tokens/tokens.module';
 import { MailTemplatesModule } from '../mail-templates/mail-templates.module';
+import { FacebookStrategy } from './strategy/facebook.strategy';
+import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { MailTemplatesModule } from '../mail-templates/mail-templates.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, FacebookStrategy, GoogleStrategy],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
