@@ -75,7 +75,7 @@ export class AuthController {
     return this.authService.changePassword(newPassword, username);
   }
 
-  @Get('/facebook/redirect')
+  @Get('v1/facebook/redirect')
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req): Promise<{ accessToken: string }> {
     const userData = req.user.user;
@@ -83,7 +83,7 @@ export class AuthController {
     return this.authService.socialLoginAuth(userData)
   }
 
-  @Get('/google/redirect')
+  @Get('v1/google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req: Request): Promise<{ accessToken: string }> {
     return this.authService.socialLoginAuth(req.user)

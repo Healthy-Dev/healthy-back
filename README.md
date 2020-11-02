@@ -65,6 +65,16 @@ CLOUDINARY_API_SECRET=
 JWT_SECRET_KEY={{Texto de seguridad para desencriptar el token}}
 JWT_EXPIRES={{Tiempo que dura el token}}
 
+# Variables para el social login
+
+FACEBOOK_CLIENT_SECRET=
+FACEBOOK_CLIENT_ID=
+FACEBOOK_CLIENT_URL= {{API URL}} /facebook/redirect
+
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_URL= {{API URL}} /google/redirect
+
 ```
 
 ## Documentación 📖

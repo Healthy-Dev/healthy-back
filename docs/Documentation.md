@@ -669,3 +669,57 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
+
+### GET “{{URL}}/v1/facebook/redirect”
+
+Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook
+
+**Respuesta:**
+
+```bash
+{
+    accessToken:  jwtToken (payload username)
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/facebook/redirect”,
+    {
+        method: GET,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### GET “{{URL}}/v1/google/redirect”
+
+Login con google, al llamar a esta url se redireccionara a google para loguearse con la cuenta de google
+
+**Respuesta:**
+
+```bash
+{
+    accessToken:  jwtToken (payload username)
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/google/redirect”,
+    {
+        method: GET,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
