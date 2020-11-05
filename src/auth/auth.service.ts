@@ -109,6 +109,23 @@ export class AuthService {
     return sent;
   }
 
+  async sendSignUpInfoEmail(nameOrUsername: string, email: string): Promise<boolean> {
+    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.DELETE_ACCOUNT, email };
+    const deleteToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
+    const deleteLink = `${process.env.DELETE_ACCOUNT_URL}?token=${deleteToken}`;
+    const tokenPlBase: TokenPayloadBase = { type: TokenType.RESET_PASSWORD, email };
+    const resetPassToken = await this.tokensService.getEncryptedToken(tokenPlBase);
+    const resetPasswordLink = `${process.env.CLIENT_URL_RESET_PASSWORD}?token=${resetPassToken}`;
+    let sent;
+    try {
+      sent = await this.mailTemplatesService.sendMailInfo(email, nameOrUsername, deleteLink, resetPasswordLink);
+    } catch (error) {
+      this.logger.error(`Failed send mail ${error}`);
+      return false;
+    }
+    return sent;
+  }
+
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
     const username = await this.validateUserPassword(authCredentialsDto);
     if (!username) {
@@ -149,5 +166,36 @@ export class AuthService {
       const accessToken = await this.jwtService.sign(payload);
       return { accessToken };
     }
+  }
+
+  async signUpSocialLogin(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
+    const { username, password, email } = createUserDto;
+    const salt = await bcrypt.genSalt();
+    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+    const userId = await this.usersService.createUser(createUserDto);
+    if (!userId) {
+      throw new InternalServerErrorException(
+        'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
+      );
+    }
+
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    if (user.status !== UserStatus.INACTIVO) {
+      throw new ConflictException('Healthy Dev le informa que la cuenta ya esta activa');
+    }
+    user.status = UserStatus.ACTIVO;
+    await user.save();
+
+    try {
+      this.sendSignUpInfoEmail(username, email);
+    } catch (error) {
+      this.logger.error(`Error sending verification email in sign up: ${error}`);
+    }
+
+    const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
+    return this.signIn(authCredentialsDto);
   }
 }
