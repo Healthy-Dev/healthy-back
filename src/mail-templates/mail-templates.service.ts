@@ -8,10 +8,11 @@ const mjml = require('mjml');
 export class MailTemplatesService {
   constructor(private mailService: MailService) {}
 
-  async sendMailVerify(email: string, nameOrUsername: string, activationLink: string) {
+  async sendMailVerify(email: string, nameOrUsername: string, activationLink: string, deleteLink: string) {
     const templateData = {
       nameOrUsername,
       activationLink,
+      deleteLink,
     };
     const mjmlTemplate = verifyTemplate;
     const renderedMJML = mustache.render(mjmlTemplate, templateData);
