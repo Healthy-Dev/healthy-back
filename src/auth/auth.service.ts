@@ -155,11 +155,16 @@ export class AuthService {
   }
 
   async socialLoginAuth(user: any): Promise<{ accessToken: string }> {
-    const username = user.email.split("@")[0];
-    const password = generate({ length: 20, numbers: true })
+    const username: string = user.email.split("@")[0];
+    const password: string = generate({ length: 20, numbers: true })
     const findUser = await this.usersService.getUserByEmail(user.email);
     if (!findUser) {
-      await this.signUp({email: user.email, username, password})
+      const createUserDto: CreateUserDto = {
+        email: user.email,
+        username,
+        password
+      }
+      await this.signUpSocialLogin(createUserDto)
     } else {
       const { username } = await this.usersService.getUserByUsernameOrEmail(user.email);
       const payload: JwtPayload = { username };
@@ -178,7 +183,6 @@ export class AuthService {
         'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
       );
     }
-
     const user = await this.usersService.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
@@ -187,13 +191,11 @@ export class AuthService {
       user.status = UserStatus.ACTIVO;
     }
     await user.save();
-
     try {
       this.sendSignUpInfoEmail(username, email);
     } catch (error) {
       this.logger.error(`Error sending verification email in sign up: ${error}`);
     }
-
     const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
     return this.signIn(authCredentialsDto);
   }
