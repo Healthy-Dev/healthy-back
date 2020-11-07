@@ -112,7 +112,7 @@ export class AuthService {
   async sendSignUpInfoEmail(nameOrUsername: string, email: string): Promise<boolean> {
     const tokenPayloadBase: TokenPayloadBase = { type: TokenType.DELETE_ACCOUNT, email };
     const deleteToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
-    const deleteLink = `${process.env.DELETE_ACCOUNT_URL}?token=${deleteToken}`;
+    const deleteLink = `${process.env.CLIENT_URL_DELETE_USER}?token=${deleteToken}`;
     const tokenPlBase: TokenPayloadBase = { type: TokenType.RESET_PASSWORD, email };
     const resetPassToken = await this.tokensService.getEncryptedToken(tokenPlBase);
     const resetPasswordLink = `${process.env.CLIENT_URL_RESET_PASSWORD}?token=${resetPassToken}`;
@@ -183,10 +183,9 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
     }
-    if (user.status !== UserStatus.INACTIVO) {
-      throw new ConflictException('Healthy Dev le informa que la cuenta ya esta activa');
+    if (user.status !== UserStatus.ACTIVO) {
+      user.status = UserStatus.ACTIVO;
     }
-    user.status = UserStatus.ACTIVO;
     await user.save();
 
     try {
