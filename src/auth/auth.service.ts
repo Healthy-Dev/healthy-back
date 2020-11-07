@@ -164,7 +164,7 @@ export class AuthService {
         username,
         password
       }
-      await this.signUpSocialLogin(createUserDto)
+      return await this.signUpSocialLogin(createUserDto)
     } else {
       const { username } = await this.usersService.getUserByUsernameOrEmail(user.email);
       const payload: JwtPayload = { username };
@@ -197,6 +197,6 @@ export class AuthService {
       this.logger.error(`Error sending verification email in sign up: ${error}`);
     }
     const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
-    return this.signIn(authCredentialsDto);
+    return await this.signIn(authCredentialsDto);
   }
 }

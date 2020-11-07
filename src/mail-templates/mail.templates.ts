@@ -67,8 +67,8 @@ export const infoTemplate = `
         <mj-social padding-top="20px">
           <mj-social-element padding="5px" name="twitter-noshare" href="https://twitter.com/FrontEndCafe"></mj-social-element>
           <mj-social-element padding="5px" name="github-noshare" href="http://github.com/frontend-cafe"></mj-social-element>
-          <mj-social-element padding="5px"name="linkedin-noshare" href="https://www.linkedin.com/company/frontendcafe"></mj-social-element>
-          <mj-social-element padding="5px"name="youtube-noshare" href="https://www.youtube.com/channel/UCUdXQMrVjrMMWG5NOZFpHqQ"></mj-social-element>
+          <mj-social-element padding="5px" name="linkedin-noshare" href="https://www.linkedin.com/company/frontendcafe"></mj-social-element>
+          <mj-social-element padding="5px" name="youtube-noshare" href="https://www.youtube.com/channel/UCUdXQMrVjrMMWG5NOZFpHqQ"></mj-social-element>
         </mj-social>
       </mj-column>
     </mj-section>

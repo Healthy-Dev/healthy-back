@@ -79,7 +79,6 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req): Promise<{ accessToken: string }> {
     const userData = req.user.user;
-    console.log(userData);
     return this.authService.socialLoginAuth(userData)
   }
 
