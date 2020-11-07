@@ -78,10 +78,11 @@ EMAIL_REFRESH_TOKEN=
 EMAIL_ACCESS_TOKEN=
 EMAIL_TOKEN_EXPIRES=
 
-# Las siguientes variables son necesarias para los destinos de los links del email (verificación email y olvide contraseña)
+# Las siguientes variables son necesarias para los destinos de los links del email (verificación email con posibilidad de eliminar cuenta si no fue creada por el titular y olvide contraseña)
 
 CLIENT_URL_VERIFICATION=
 CLIENT_URL_RESET_PASSWORD=
+CLIENT_URL_DELETE_USER=
 
 # Las siguientes variables son necesarias la creación de tokens encriptados de verificación email y olvide contraseña
 
