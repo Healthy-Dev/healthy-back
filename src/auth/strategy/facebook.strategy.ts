@@ -8,7 +8,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     super({
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: process.env.FACEBOOK_CLIENT_URL,
+      callbackURL: process.env.GOOGLE_BACKEND_URL,
       scope: 'email',
       profileFields: ['emails', 'name'],
     });

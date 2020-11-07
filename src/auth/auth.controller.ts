@@ -8,6 +8,7 @@ import {
   Req,
   Query,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -20,7 +21,7 @@ import { GetUser } from './get-user.decorator';
 import { User } from '../users/user.entity';
 import { TokenDto } from './dto/token.dto';
 import { EmailDto } from './dto/resend-verification.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller()
 export class AuthController {
@@ -75,16 +76,16 @@ export class AuthController {
     return this.authService.changePassword(newPassword, username);
   }
 
-  @Get('v1/facebook/redirect')
+  @Get('v1/auth/facebook')
   @UseGuards(AuthGuard('facebook'))
-  async facebookLoginRedirect(@Req() req): Promise<{ accessToken: string }> {
+  async facebookLoginRedirect(@Req() req, @Res() res: Response): Promise<void> {
     const userData = req.user.user;
-    return this.authService.socialLoginAuth(userData)
+    return this.authService.socialLoginAuth(userData, res.redirect)
   }
 
-  @Get('v1/google/redirect')
+  @Get('v1/auth/google')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req: Request): Promise<{ accessToken: string }> {
-    return this.authService.socialLoginAuth(req.user)
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response): Promise<void> {
+    return this.authService.socialLoginAuth(req.user, res)
   }
 }

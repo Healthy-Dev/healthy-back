@@ -154,26 +154,27 @@ export class AuthService {
     return this.usersService.changePassword(newPassword, username);
   }
 
-  async socialLoginAuth(user: any): Promise<{ accessToken: string }> {
+  async socialLoginAuth(user: any, res: any): Promise<void> {
     const username: string = user.email.split("@")[0];
     const password: string = generate({ length: 20, numbers: true })
     const findUser = await this.usersService.getUserByEmail(user.email);
+    let accessToken: string;
     if (!findUser) {
       const createUserDto: CreateUserDto = {
         email: user.email,
         username,
         password
       }
-      return await this.signUpSocialLogin(createUserDto)
+      accessToken = await this.signUpSocialLogin(createUserDto);
     } else {
       const { username } = await this.usersService.getUserByUsernameOrEmail(user.email);
       const payload: JwtPayload = { username };
-      const accessToken = await this.jwtService.sign(payload);
-      return { accessToken };
+      accessToken = await this.jwtService.sign(payload);
     }
+    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}/${accessToken}`)
   }
 
-  async signUpSocialLogin(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
+  async signUpSocialLogin(createUserDto: CreateUserDto): Promise<string> {
     const { username, password, email } = createUserDto;
     const salt = await bcrypt.genSalt();
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
@@ -197,6 +198,7 @@ export class AuthService {
       this.logger.error(`Error sending verification email in sign up: ${error}`);
     }
     const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
-    return await this.signIn(authCredentialsDto);
+    const { accessToken } = await this.signIn(authCredentialsDto);
+    return accessToken;
   }
 }

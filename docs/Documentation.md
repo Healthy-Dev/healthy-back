@@ -670,17 +670,13 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/facebook/redirect”
+### GET “{{URL}}/v1/auth/facebook
 
-Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook
+Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook y luego a una screen del frontend con el token como parametro
 
 **Respuesta:**
 
-```bash
-{
-    accessToken:  jwtToken (payload username)
-}
-```
+Redireccionara a una screen del frontend con el token como parametro
 
 **Ejemplo:**
 
@@ -697,23 +693,19 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/google/redirect”
+### GET “{{URL}}/v1/auth/google
 
-Login con google, al llamar a esta url se redireccionara a google para loguearse con la cuenta de google
+Login con google, al llamar a esta url se redireccionara a google para loguearse con la cuenta de google y luego a una screen del frontend con el token como parametro
 
 **Respuesta:**
 
-```bash
-{
-    accessToken:  jwtToken (payload username)
-}
-```
+Redireccionara a una screen del frontend con el token como parametro
 
 **Ejemplo:**
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/google/redirect”,
+    “https://healthydev.herokuapp.com/v1/google/auth,
     {
         method: GET,
         headers:{

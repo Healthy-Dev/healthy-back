@@ -69,11 +69,13 @@ JWT_EXPIRES={{Tiempo que dura el token}}
 
 FACEBOOK_CLIENT_SECRET=
 FACEBOOK_CLIENT_ID=
-FACEBOOK_CLIENT_URL= {{API URL}} /v1/facebook/redirect
+FACEBOOK_BACKEND_URL= {{API_URL}} /v1/auth/acebook
 
 GOOGLE_CLIENT_SECRET=
 GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_URL= {{API URL}} /v1/google/redirect
+GOOGLE_BACKEND_URL= {{API_URL}} /v1/auth/google
+
+SOCIAL_AUTH_CLIENT_URL= {{FrontEnd url para redirigir el social login}}
 
 # Variables para el envío de mails
 
