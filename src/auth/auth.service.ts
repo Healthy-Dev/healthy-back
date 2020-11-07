@@ -110,7 +110,7 @@ export class AuthService {
   }
 
   async sendSignUpInfoEmail(nameOrUsername: string, email: string): Promise<boolean> {
-    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.DELETE_ACCOUNT, email };
+    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.DELETE_USER, email };
     const deleteToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
     const deleteLink = `${process.env.CLIENT_URL_DELETE_USER}?token=${deleteToken}`;
     const tokenPlBase: TokenPayloadBase = { type: TokenType.RESET_PASSWORD, email };
