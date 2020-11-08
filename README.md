@@ -69,11 +69,11 @@ JWT_EXPIRES={{Tiempo que dura el token}}
 
 FACEBOOK_CLIENT_SECRET=
 FACEBOOK_CLIENT_ID=
-FACEBOOK_BACKEND_URL= {{API_URL}} /v1/auth/acebook
+FACEBOOK_BACKEND_URL= {{API_URL}} /v1/auth/acebook/
 
 GOOGLE_CLIENT_SECRET=
 GOOGLE_CLIENT_ID=
-GOOGLE_BACKEND_URL= {{API_URL}} /v1/auth/google
+GOOGLE_BACKEND_URL= {{API_URL}} /v1/auth/google/
 
 SOCIAL_AUTH_CLIENT_URL= {{FrontEnd url para redirigir el social login}}
 
