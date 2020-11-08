@@ -171,7 +171,7 @@ export class AuthService {
       const payload: JwtPayload = { username };
       accessToken = await this.jwtService.sign(payload);
     }
-    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}/${accessToken}`)
+    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}/?token=${accessToken}`)
   }
 
   async signUpSocialLogin(createUserDto: CreateUserDto): Promise<string> {
