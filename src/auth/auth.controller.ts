@@ -80,7 +80,7 @@ export class AuthController {
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req, @Res() res: Response): Promise<void> {
     const userData = req.user.user;
-    return this.authService.socialLoginAuth(userData, res.redirect)
+    return this.authService.socialLoginAuth(userData, res)
   }
 
   @Get('v1/auth/google')

@@ -35,9 +35,9 @@ export class UsersService {
     return await this.userRepository.getUserByUsernameOrEmail(usernameOrEmail);
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<{ id: number }> {
+  async createUser(createUserDto: CreateUserDto, active?: boolean): Promise<{ id: number }> {
     const photoUrl = this.imageManagementService.placeholderUserUrl;
-    return this.userRepository.createUser(createUserDto, photoUrl);
+    return this.userRepository.createUser(createUserDto, photoUrl, active ? active : false);
   }
 
   async getUser(username: string): Promise<{ user: {} }> {

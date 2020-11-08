@@ -18,7 +18,7 @@ import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto'
 import { TokenType } from '../tokens/token-type.enum';
 import { Logger } from '@nestjs/common';
 import { MailTemplatesService } from '../mail-templates/mail-templates.service';
-import {generate} from 'generate-password';
+import { generate } from 'generate-password';
 
 @Injectable()
 export class AuthService {
@@ -118,7 +118,12 @@ export class AuthService {
     const resetPasswordLink = `${process.env.CLIENT_URL_RESET_PASSWORD}?token=${resetPassToken}`;
     let sent;
     try {
-      sent = await this.mailTemplatesService.sendMailInfo(email, nameOrUsername, deleteLink, resetPasswordLink);
+      sent = await this.mailTemplatesService.sendMailInfo(
+        email,
+        nameOrUsername,
+        deleteLink,
+        resetPasswordLink,
+      );
     } catch (error) {
       this.logger.error(`Failed send mail ${error}`);
       return false;
@@ -155,43 +160,38 @@ export class AuthService {
   }
 
   async socialLoginAuth(user: any, res: any): Promise<void> {
-    const username: string = user.email.split("@")[0];
-    const password: string = generate({ length: 20, numbers: true })
-    const findUser = await this.usersService.getUserByEmail(user.email);
     let accessToken: string;
-    if (!findUser) {
+    const findUserByEmail = await this.usersService.getUserByEmail(user.email);
+    if (!findUserByEmail) {
+      let username: string = user.email.split('@')[0];
+      const password: string = generate({ length: 20, numbers: true });
+      while (await this.usersService.getUserByUsername(username)) {
+        username += generate({ length: 2 });
+      }
       const createUserDto: CreateUserDto = {
         email: user.email,
         username,
-        password
-      }
+        password,
+      };
       accessToken = await this.signUpSocialLogin(createUserDto);
     } else {
       const { username } = await this.usersService.getUserByUsernameOrEmail(user.email);
       const payload: JwtPayload = { username };
       accessToken = await this.jwtService.sign(payload);
     }
-    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}/?token=${accessToken}`)
+    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}/?token=${accessToken}`);
   }
 
   async signUpSocialLogin(createUserDto: CreateUserDto): Promise<string> {
     const { username, password, email } = createUserDto;
     const salt = await bcrypt.genSalt();
     createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
-    const userId = await this.usersService.createUser(createUserDto);
+    const userId = await this.usersService.createUser(createUserDto, true);
     if (!userId) {
       throw new InternalServerErrorException(
         'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
       );
     }
-    const user = await this.usersService.getUserByEmail(email);
-    if (!user) {
-      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
-    }
-    if (user.status !== UserStatus.ACTIVO) {
-      user.status = UserStatus.ACTIVO;
-    }
-    await user.save();
     try {
       this.sendSignUpInfoEmail(username, email);
     } catch (error) {
