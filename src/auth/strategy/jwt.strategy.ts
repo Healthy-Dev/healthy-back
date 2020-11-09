@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtPayload } from './jwt-payload.interface';
+import { JwtPayloadBase, JwtPayload } from './jwt-payload.interface';
 import { User } from '../../users/user.entity';
 import { UsersService } from '../../users/users.service';
 
@@ -15,10 +15,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User> {
-    const { username } = payload;
+    const { username, iat } = payload;
     const user = await this.usersService.getUserByUsername(username);
+    const iatDate =  new Date(iat * 1000);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Healthy le informa que el token no es válido');
+    }
+    if (user.passwordChangedAt && iatDate < user.passwordChangedAt){
+      throw new UnauthorizedException('Healthy le informa que se ha modificado su contraseña, por favor ingrese nuevamente');
     }
     return user;
   }

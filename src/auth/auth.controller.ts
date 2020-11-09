@@ -35,15 +35,33 @@ export class AuthController {
   }
 
   @Post('v1/auth/verify/')
-  async verifyAccount(@Query(ValidationPipe) query: TokenDto): Promise<{ message: string }> {
-    return this.authService.verifyAccount(query.token);
+  async verifyAccount(@Query(ValidationPipe) tokenDto: TokenDto): Promise<{ message: string }> {
+    return this.authService.verifyAccount(tokenDto);
   }
 
-  @Get('/v1/auth/resend-verification/')
+  @Get('/v1/auth/resend-verification/:email')
   async resendVerificationAccount(
-    @Body(ValidationPipe) emailDto: EmailDto,
+    @Param(ValidationPipe) emailDto: EmailDto,
   ): Promise<{ message: string }> {
-    return this.authService.resendVerificationAccount(emailDto.email);
+    return this.authService.resendVerificationAccount(emailDto);
+  }
+
+  @Get('/v1/auth/forgot-password/:email')
+  async forgotPassword(@Param(ValidationPipe) emailDto: EmailDto): Promise<{ message: string }> {
+    return this.authService.forgotPassword(emailDto);
+  }
+
+  @Post('v1/auth/reset-password')
+  public async resetPassword(
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+      }),
+    )
+    newPassword: NewPasswordDto,
+    @Query(ValidationPipe) tokenDto: TokenDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resetPassword(newPassword, tokenDto);
   }
 
   @Post('v1/auth/signin')

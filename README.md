@@ -1,8 +1,6 @@
-
 <h1 align="center"> Backend para HealthyDev 💪</h1>
 
-
- Api Rest para aplicación web HealthyDev.
+Api Rest para aplicación web HealthyDev.
 
 ## Requerimientos 📋
 
@@ -77,7 +75,7 @@ GOOGLE_BACKEND_URL= {{API_URL}} /v1/auth/google/
 
 SOCIAL_AUTH_CLIENT_URL= {{FrontEnd url para redirigir el social login}}
 
-# Variables para el envío de mails
+# Las siguientes variables son necesarias para el envio de emails usando OAuth2 (verificación email y olvide contraseña)
 
 EMAIL_AUTH_TYPE=
 EMAIL_SERVICE=
@@ -92,13 +90,28 @@ EMAIL_REFRESH_TOKEN=
 EMAIL_ACCESS_TOKEN=
 EMAIL_TOKEN_EXPIRES=
 
+# Las siguientes variables son necesarias para los destinos de los links del email (verificación email con posibilidad de eliminar cuenta si no fue creada por el titular y olvide contraseña)
+
 CLIENT_URL_VERIFICATION=
 CLIENT_URL_RESET_PASSWORD=
 CLIENT_URL_DELETE_USER=
 
-TOKENS_BIT_LENGTH=
-TOKENS_ALGORITHM=
-TOKENS_EXPIRES=
+# Las siguientes variables son necesarias la creación de tokens encriptados de verificación email y olvide contraseña
+
+TOKENS_BIT_LENGTH =
+TOKENS_ALGORITHM =
+TOKENS_EXPIRES =
+
+```
+
+## Test 🛠️
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
 
 ```
 
@@ -112,4 +125,4 @@ Contacta con la comunidad FrontEnd Cafe. https://twitter.com/FrontEndCafe
 
 ## Licencia 📄
 
-  [MIT licensed](LICENSE).
+[MIT licensed](LICENSE).

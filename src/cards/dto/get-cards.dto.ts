@@ -1,5 +1,6 @@
-import { IsOptional, IsNumber, IsString, IsIn, IsPositive } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsNumber, IsString, IsIn, IsPositive, IsArray, isIn, isEnum, IsEnum } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { CardExpand, getAllowCardExpand } from '../card-expand';
 export class GetCardsFilterDto {
   @IsOptional()
   @IsNumber({}, { message: 'Healthy Dev te pide que el limit sea numérico' })
@@ -26,4 +27,11 @@ export class GetCardsFilterDto {
   @Type(() => Number)
   @IsPositive({ message: 'Healthy Dev te pide que no dejes el id de la categoría vacío' })
   categoryId: number;
+
+  @IsOptional()
+  @IsArray({ message: 'Expand debe ser un arreglo' })
+  @IsEnum(CardExpand, {each: true, message: `Expand debe contener opciones válida (${getAllowCardExpand().sort().toString()})`})
+  @Type(() => String)
+  @Transform((value: CardExpand) => value.split(','))
+  expand: CardExpand[];
 }
