@@ -20,13 +20,14 @@ export class UserRepository extends Repository<User> {
     return user;
   }
 
-  async createUser(createUserDto: CreateUserDto, photoUrl: string): Promise<{ id: number }> {
+  async createUser(createUserDto: CreateUserDto, photoUrl: string, active?: boolean): Promise<{ id: number }> {
     const { email, username, password } = createUserDto;
     const user = new User();
     user.email = email;
     user.username = username;
     user.password = password;
     user.profilePhoto = photoUrl;
+    user.status = active ? UserStatus.ACTIVO : user.status;
     try {
       await user.save();
     } catch (error) {
