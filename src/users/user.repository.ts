@@ -22,7 +22,7 @@ export class UserRepository extends Repository<User> {
 
   async createUser(createUserDto: CreateUserDto, photoUrl: string): Promise<{ id: number }> {
     const { email, username, password } = createUserDto;
-    const user = new User();
+    const user =  this.create();
     user.email = email;
     user.username = username;
     user.password = password;
