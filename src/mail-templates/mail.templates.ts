@@ -19,10 +19,27 @@ export const verifyTemplate = `
       <mj-column>
         <mj-text align="center" padding="10px 25px" font-size="20px" color="#FFF"><strong>Hola {{nameOrUsername}}!</strong></mj-text>
         <mj-text align="center" font-size="18px" font-family="Arial" color="#FFF">Muchas gracias por registrarte en Healthy Dev<br/> Por favor presiona en el botón para activar tu cuenta</mj-text>
-  
-        <mj-button background-color="#F4DD27" color="#FFF" href="{{activationLink}}" font-family="Arial, sans-serif" padding="20px 0 0 0" font-weight="bold" font-size="16px">Activar cuenta</mj-button>
-        <mj-text align="center" color="#FFF" font-size="14px" font-family="Arial, sans-serif" padding-top="40px">Healthy Dev es un proyecto de la comunidad FrontEnd Cafe
+        <mj-button background-color="#F4DD27" color="#FFF" href="{{activationLink}}" font-family="Arial, sans-serif" padding="20px 0 20px 0" font-weight="bold" font-size="16px">Activar cuenta</mj-button>
+        <mj-text align="center" font-size="12px" font-family="Arial" color="#FFF">Si usted no solicitó la creación de la cuenta, por favor presione 
+         <span style="color:red;"> <a href="{{deleteLink}}" style="text-decoration: none; color: inherit;">aquí</a></span> para eliminar la cuenta, disculpe las molestias.</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#06393e" padding-bottom="20px" padding-top="0">
+      <mj-column>
+        <mj-image src="https://res.cloudinary.com/du7xgj6ms/image/upload/v1604704342/mail/logo_h5ufs1.png" alt="FrontEndCafe logo" align="center" border="none" width="50px" padding-left="0px" padding-right="0px" padding-bottom="0px" padding-top="10px"></mj-image>
+      </mj-column>
+      <mj-column>
+        <mj-text align="center" color="#fff" font-size="13px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0">
+          <p>Healthy Dev es un proyecto de <a href="https://frontend.cafe/" style="text-decoration: none; color: inherit;">FrontEndCafé</a></p>
         </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-social padding-top="20px">
+          <mj-social-element padding="5px" name="twitter-noshare" href="https://twitter.com/FrontEndCafe"></mj-social-element>
+          <mj-social-element padding="5px" name="github-noshare" href="http://github.com/frontend-cafe"></mj-social-element>
+          <mj-social-element padding="5px"name="linkedin-noshare" href="https://www.linkedin.com/company/frontendcafe"></mj-social-element>
+          <mj-social-element padding="5px"name="youtube-noshare" href="https://www.youtube.com/channel/UCUdXQMrVjrMMWG5NOZFpHqQ"></mj-social-element>
+        </mj-social>
       </mj-column>
     </mj-section>
   </mj-body>
@@ -55,9 +72,24 @@ export const resetPasswordTemplate = `
         <mj-button background-color="#F4DD27" color="#FFF" href="{{resetPasswordLink}}" font-family="Arial, sans-serif" padding="20px 0 0 0" font-weight="bold" font-size="16px">
           Crear nueva contraseña
         </mj-button>
-        <mj-text align="center" color="#FFF" font-size="14px" font-family="Arial, sans-serif" padding-top="40px">
-          Healthy Dev es un proyecto de la comunidad FrontEnd Cafe
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#06393e" padding-bottom="20px" padding-top="0">
+      <mj-column>
+        <mj-image src="https://res.cloudinary.com/du7xgj6ms/image/upload/v1604704342/mail/logo_h5ufs1.png" alt="FrontEndCafe logo" align="center" border="none" width="50px" padding-left="0px" padding-right="0px" padding-bottom="0px" padding-top="10px"></mj-image>
+      </mj-column>
+      <mj-column>
+        <mj-text align="center" color="#fff" font-size="13px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0">
+          <p>Healthy Dev es un proyecto de <a href="https://frontend.cafe/" style="text-decoration: none; color: inherit;">FrontEndCafé</a></p>
         </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-social padding-top="20px">
+          <mj-social-element padding="5px" name="twitter-noshare" href="https://twitter.com/FrontEndCafe"></mj-social-element>
+          <mj-social-element padding="5px" name="github-noshare" href="http://github.com/frontend-cafe"></mj-social-element>
+          <mj-social-element padding="5px"name="linkedin-noshare" href="https://www.linkedin.com/company/frontendcafe"></mj-social-element>
+          <mj-social-element padding="5px"name="youtube-noshare" href="https://www.youtube.com/channel/UCUdXQMrVjrMMWG5NOZFpHqQ"></mj-social-element>
+        </mj-social>
       </mj-column>
     </mj-section>
   </mj-body>

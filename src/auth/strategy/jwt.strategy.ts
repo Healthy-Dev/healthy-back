@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.usersService.getUserByUsername(username);
     const iatDate =  new Date(iat * 1000);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Healthy le informa que el token no es válido');
     }
     if (user.passwordChangedAt && iatDate < user.passwordChangedAt){
       throw new UnauthorizedException('Healthy le informa que se ha modificado su contraseña, por favor ingrese nuevamente');

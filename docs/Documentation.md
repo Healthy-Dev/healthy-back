@@ -626,6 +626,39 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
+### DELETE “{{URL}}/v1/users/”
+
+Eliminación de cuenta por opción de verificación de cuenta de email para activar usuario.
+
+**Parámetros:**
+
+    Enviados por URL
+
+    - token: token encriptado previamente enviado por email para activar usuario en caso de que no lo hubiera solicitado (Obligatorio)
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que el usuario ha sido eliminado”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/users/?token=xxxxxxxxxxxxxxxx”,
+    {
+        method: “DELETE”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
 ### POST “{{URL}}/v1/auth/new-password”
 
 Cambiar contraseña de usuario actual

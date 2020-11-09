@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsUrl,
   IsPositive,
+  MinLength,
 } from 'class-validator';
 
 export class CreateCardDto {
@@ -16,6 +17,7 @@ export class CreateCardDto {
 
   @IsNotEmpty({ message: 'Healthy Dev te pide que no dejes la descripción vacía.' })
   @IsString({ message: 'Healthy Dev te pide que ingreses texto en la descripción.' })
+  @MinLength(100, { message: 'Healthy Dev te pide que la descripción contenga al menos 100 caracteres.'})
   description: string;
 
   @IsOptional()

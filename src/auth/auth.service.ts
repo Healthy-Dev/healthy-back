@@ -117,12 +117,15 @@ export class AuthService {
   }
 
   async sendEmailVerification(nameOrUsername: string, email: string): Promise<boolean> {
-    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.VERIFY_EMAIL, email };
-    const activationToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
+    const tokenPayloadBaseActivation: TokenPayloadBase = { type: TokenType.VERIFY_EMAIL, email };
+    const activationToken = await this.tokensService.getEncryptedToken(tokenPayloadBaseActivation);
     const activationLink = `${process.env.CLIENT_URL_VERIFICATION}?token=${activationToken}`;
+    const tokenPayloadBaseDelete: TokenPayloadBase = { type: TokenType.DELETE_USER, email };
+    const deleteToken = await this.tokensService.getEncryptedToken(tokenPayloadBaseDelete);
+    const deleteLink = `${process.env.CLIENT_URL_DELETE_USER}?token=${deleteToken}`;
     let sent;
     try {
-      sent = await this.mailTemplatesService.sendMailVerify(email, nameOrUsername, activationLink);
+      sent = await this.mailTemplatesService.sendMailVerify(email, nameOrUsername, activationLink, deleteLink);
     } catch (error) {
       this.logger.error(`Failed send mail ${error}`);
       return false;
