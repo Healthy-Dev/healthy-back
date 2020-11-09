@@ -702,6 +702,29 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
+
+### GET “{{URL}}/v1/auth/facebook
+
+Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook y luego a una screen del frontend con el token como parametro
+
+**Respuesta:**
+
+Redireccionara a una screen del frontend con el token como parametro
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/facebook/redirect”,
+    {
+        method: GET,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
 ### GET “{{URL}}/v1/auth/forgot-password/:email”
 
 Envio de email crear nueva contraseña usuario.
@@ -719,7 +742,6 @@ Envio de email crear nueva contraseña usuario.
     message: “Healthy Dev le informa que se ha enviado el email para crear nueva contraseña correctamente”
 }
 ```
-
 **Ejemplo:**
 
 ```bash
@@ -731,6 +753,28 @@ fetch(
                 'Content-Type': 'application/json',
         },
     },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+### GET “{{URL}}/v1/auth/google
+
+Login con google, al llamar a esta url se redireccionara a google para loguearse con la cuenta de google y luego a una screen del frontend con el token como parametro
+
+**Respuesta:**
+
+Redireccionara a una screen del frontend con el token como parametro
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/google/auth,
+    {
+        method: GET,
+        headers:{
+                'Content-Type': 'application/json',
+        },
 )
 .then(“// Manejo de Respuesta”);
 ```
@@ -762,11 +806,11 @@ Cambiar contraseña de usuario solicitada por email
     message: “Contraseña Cambiada con éxito.”
 }
 ```
-
 **Ejemplo:**
 
 ```bash
 fetch(
+
     “https://healthydev.herokuapp.com/v1/auth/reset-password/?token=xxxxxxxxxxxxxxxx”,
     {
         method: “POST”,
@@ -778,7 +822,9 @@ fetch(
             “password”: “SuperPass21“
             }
         )
-    },
+     },
 )
 .then(“// Manejo de Respuesta”);
 ```
+
+    

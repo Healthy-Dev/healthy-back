@@ -63,6 +63,18 @@ CLOUDINARY_API_SECRET=
 JWT_SECRET_KEY={{Texto de seguridad para desencriptar el token}}
 JWT_EXPIRES={{Tiempo que dura el token}}
 
+# Variables para el social login
+
+FACEBOOK_CLIENT_SECRET=
+FACEBOOK_CLIENT_ID=
+FACEBOOK_BACKEND_URL= {{API_URL}} /v1/auth/facebook/
+
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_BACKEND_URL= {{API_URL}} /v1/auth/google/
+
+SOCIAL_AUTH_CLIENT_URL= {{FrontEnd url para redirigir el social login}}
+
 # Las siguientes variables son necesarias para el envio de emails usando OAuth2 (verificación email y olvide contraseña)
 
 EMAIL_AUTH_TYPE=

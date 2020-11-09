@@ -18,6 +18,7 @@ import { TokenPayload, TokenPayloadBase } from '../tokens/dto/token-payload.dto'
 import { TokenType } from '../tokens/token-type.enum';
 import { Logger } from '@nestjs/common';
 import { MailTemplatesService } from '../mail-templates/mail-templates.service';
+import { generate } from 'generate-password';
 import { TokenDto } from './dto/token.dto';
 import { EmailDto } from './dto/resend-verification.dto';
 
@@ -151,6 +152,28 @@ export class AuthService {
     return sent;
   }
 
+  async sendSignUpInfoEmail(nameOrUsername: string, email: string): Promise<boolean> {
+    const tokenPayloadBase: TokenPayloadBase = { type: TokenType.DELETE_USER, email };
+    const deleteToken = await this.tokensService.getEncryptedToken(tokenPayloadBase);
+    const deleteLink = `${process.env.CLIENT_URL_DELETE_USER}?token=${deleteToken}`;
+    const tokenPlBase: TokenPayloadBase = { type: TokenType.RESET_PASSWORD, email };
+    const resetPassToken = await this.tokensService.getEncryptedToken(tokenPlBase);
+    const resetPasswordLink = `${process.env.CLIENT_URL_RESET_PASSWORD}?token=${resetPassToken}`;
+    let sent;
+    try {
+      sent = await this.mailTemplatesService.sendMailInfo(
+        email,
+        nameOrUsername,
+        deleteLink,
+        resetPasswordLink,
+      );
+    } catch (error) {
+      this.logger.error(`Failed send mail ${error}`);
+      return false;
+    }
+    return sent;
+  }
+
   async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
     const username = await this.validateUserPassword(authCredentialsDto);
     if (!username) {
@@ -203,5 +226,48 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     newPassword.password = await bcrypt.hash(newPassword.password, salt);
     return this.usersService.changePassword(newPassword, username);
+  }
+
+  async socialLoginAuth(user: any, res: any): Promise<void> {
+    let accessToken: string;
+    const findUserByEmail = await this.usersService.getUserByEmail(user.email);
+    if (!findUserByEmail) {
+      let username: string = user.email.split('@')[0];
+      const password: string = generate({ length: 20, numbers: true });
+      while (await this.usersService.getUserByUsername(username)) {
+        username += generate({ length: 2 });
+      }
+      const createUserDto: CreateUserDto = {
+        email: user.email,
+        username,
+        password,
+      };
+      accessToken = await this.signUpSocialLogin(createUserDto);
+    } else {
+      const { username } = findUserByEmail;
+      const payload: JwtPayload = { username };
+      accessToken = await this.jwtService.sign(payload);
+    }
+    res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}?token=${accessToken}`);
+  }
+
+  async signUpSocialLogin(createUserDto: CreateUserDto): Promise<string> {
+    const { username, password, email } = createUserDto;
+    const salt = await bcrypt.genSalt();
+    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
+    const userId = await this.usersService.createUser(createUserDto, true);
+    if (!userId) {
+      throw new InternalServerErrorException(
+        'Healthy Dev no pudo registrar su usuario en este momento, intentelo nuevamente más tarde',
+      );
+    }
+    try {
+      this.sendSignUpInfoEmail(username, email);
+    } catch (error) {
+      this.logger.error(`Error sending verification email in sign up: ${error}`);
+    }
+    const authCredentialsDto: AuthCredentialsDto = { usernameOrEmail: username, password };
+    const { accessToken } = await this.signIn(authCredentialsDto);
+    return accessToken;
   }
 }
