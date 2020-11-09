@@ -7,8 +7,8 @@ import {
   Get,
   Req,
   Query,
-  HttpStatus,
   Res,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';

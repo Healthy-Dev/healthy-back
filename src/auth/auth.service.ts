@@ -245,7 +245,7 @@ export class AuthService {
       accessToken = await this.signUpSocialLogin(createUserDto);
     } else {
       const { username } = findUserByEmail;
-      const payload: JwtPayload = { username };
+      const payload: JwtPayloadBase = { username };
       accessToken = await this.jwtService.sign(payload);
     }
     res.redirect(`${process.env.SOCIAL_AUTH_CLIENT_URL}?token=${accessToken}`);
