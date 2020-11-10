@@ -121,34 +121,6 @@ describe('UsersService', () => {
     });
   });
 
-  /*
-  async deleteUserByToken(
-    tokenDto: TokenDto,
-  ): Promise<{ message: string }> {
-    const messageTokenInvalid = 'Healthy Dev le informa que no ha podido eliminar cuenta, token no valido';
-    let tokenPayload: TokenPayload;
-    try {
-      tokenPayload = await this.tokensService.verifyEncryptedToken(tokenDto.token);
-    } catch (error) {
-      throw new UnauthorizedException(messageTokenInvalid);
-    }
-    if (tokenPayload.type !== TokenType.DELETE_USER) {
-      throw new UnauthorizedException(messageTokenInvalid);
-    }
-    const user = await this.getUserByEmail(tokenPayload.email);
-    if (!user) {
-      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
-    }
-    try {
-      user.remove();
-    } catch (error) {
-      this.logger.error(`Failed to delete user ${user.id}`);
-      throw new InternalServerErrorException('Healthy Dev no pudo eliminar cuenta, intentelo nuevamente');
-    }
-    return {message: 'Healthy Dev le informa que el usuario ha sido eliminado'};
-  }
-  */
-
   describe('delete user by token', () => {
     const messageTokenInvalid = 'Healthy Dev le informa que no ha podido eliminar cuenta, token no valido';
     let user;
@@ -170,7 +142,7 @@ describe('UsersService', () => {
       expect(result).toEqual({ message: 'Healthy Dev le informa que el usuario ha sido eliminado' });
     });
 
-    it('throw an error as not verify account because verifyEncryptedToken throw error', async () => {
+    it('throw an error as not delete user because verifyEncryptedToken throw error', async () => {
       const mocktokenDto: TokenDto = {token: 'token'};
       tokensService.verifyEncryptedToken.mockImplementation(() => {
         throw new Error();
