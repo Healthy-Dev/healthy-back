@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { NotFoundException, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserRepository } from './user.repository';
 import { ImageManagementService } from '../image-management/image-management.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
+import { TokensService } from '../tokens/tokens.service';
+import { TokenDto } from '../auth/dto/token.dto';
+import { TokenType } from '../tokens/token-type.enum';
 
 const mockRepository = () => ({
   findOne: jest.fn(),
@@ -16,50 +19,31 @@ const mockImageManagementService = () => ({
   placeholderUserUrl: 'placeholderImage',
 });
 
+const mockTokensService = () => ({
+  verifyEncryptedToken: jest.fn(),
+});
+
 describe('UsersService', () => {
   let service: UsersService;
   let repository;
   let imageManagementService;
+  let tokensService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UsersService,
       {provide: UserRepository, useFactory: mockRepository},
       {provide: ImageManagementService, useFactory: mockImageManagementService},
+      {provide: TokensService, useFactory: mockTokensService},
     ],
     }).compile();
     service = module.get<UsersService>(UsersService);
     repository = module.get<UserRepository>(UserRepository);
     imageManagementService = module.get<ImageManagementService>(ImageManagementService);
+    tokensService = module.get<TokensService>(TokensService);
   });
-  /*
-  async updateUser(updateData: UpdateUserDto, username: string): Promise<{ message: string }> {
-    if (updateData.profilePhoto) {
-      const { profilePhoto } = await this.userRepository.findOne({ username });
-      try {
-        updateData.profilePhoto = await this.imageManagementService.uploadImage(
-          updateData.profilePhoto,
-        );
-      } catch (error) {
-        throw new InternalServerErrorException(
-          'Healthy Dev no pudo guardar nueva imagen de perfil y cancelo cambios',
-        );
-      }
-      if (profilePhoto) {
-        try {
-          await this.imageManagementService.deleteImage(profilePhoto);
-        } catch (error) {
-          this.logger.error(`Failed to delete image "${profilePhoto}"`);
-        }
-      }
-    }
-    return this.userRepository.updateUser(updateData, username);
-  }
-  */
-  // - falla no salva photo
-  // exito con foto
-  // exito sin foto - no hace nada
-  // exito con foto falla delete foto
+
   const mockUsername = 'usernameTest';
+
   describe('updateUser', () => {
     const id = 99;
     it('throws an error as image not save with photo', async () => {
@@ -136,4 +120,89 @@ describe('UsersService', () => {
       expect(result).toEqual(mockResult);
     });
   });
+
+  /*
+  async deleteUserByToken(
+    tokenDto: TokenDto,
+  ): Promise<{ message: string }> {
+    const messageTokenInvalid = 'Healthy Dev le informa que no ha podido eliminar cuenta, token no valido';
+    let tokenPayload: TokenPayload;
+    try {
+      tokenPayload = await this.tokensService.verifyEncryptedToken(tokenDto.token);
+    } catch (error) {
+      throw new UnauthorizedException(messageTokenInvalid);
+    }
+    if (tokenPayload.type !== TokenType.DELETE_USER) {
+      throw new UnauthorizedException(messageTokenInvalid);
+    }
+    const user = await this.getUserByEmail(tokenPayload.email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    try {
+      user.remove();
+    } catch (error) {
+      this.logger.error(`Failed to delete user ${user.id}`);
+      throw new InternalServerErrorException('Healthy Dev no pudo eliminar cuenta, intentelo nuevamente');
+    }
+    return {message: 'Healthy Dev le informa que el usuario ha sido eliminado'};
+  }
+  */
+
+  describe('delete user by token', () => {
+    const messageTokenInvalid = 'Healthy Dev le informa que no ha podido eliminar cuenta, token no valido';
+    let user;
+    beforeEach(async () => {
+      user = new User();
+      user.username = 'test';
+    });
+    it('return message user deleted succesfully', async () => {
+      const mocktokenDto: TokenDto = {token: 'token'};
+      tokensService.verifyEncryptedToken.mockResolvedValue({
+        email: 'test@test.com',
+        type: TokenType.DELETE_USER,  iat: 123,
+        exp: 321,
+      });
+      service.getUserByEmail = jest.fn().mockResolvedValue(user);
+      user.remove = jest.fn();
+      const result = await service.deleteUserByToken(mocktokenDto);
+      expect(user.remove).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({ message: 'Healthy Dev le informa que el usuario ha sido eliminado' });
+    });
+
+    it('throw an error as not verify account because verifyEncryptedToken throw error', async () => {
+      const mocktokenDto: TokenDto = {token: 'token'};
+      tokensService.verifyEncryptedToken.mockImplementation(() => {
+        throw new Error();
+      });
+      service.getUserByEmail = jest.fn().mockResolvedValue(user);
+      user.save = jest.fn();
+      expect(service.deleteUserByToken(mocktokenDto)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throw an error as not delete user because token payload type not was delete user', async () => {
+      const mocktokenDto: TokenDto = {token: 'token'};
+      tokensService.verifyEncryptedToken.mockResolvedValue({
+        email: 'test@test.com',
+        type: TokenType.RESET_PASSWORD,  iat: 123,
+        exp: 321,
+      });
+      service.getUserByEmail = jest.fn().mockResolvedValue(user);
+      user.remove = jest.fn();
+      expect(service.deleteUserByToken(mocktokenDto)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throws an error as user not found', async () => {
+      const mocktokenDto: TokenDto = {token: 'token'};
+      tokensService.verifyEncryptedToken.mockResolvedValue({
+        email: 'test@test.com',
+        type: TokenType.DELETE_USER,  iat: 123,
+        exp: 321,
+      });
+      service.getUserByEmail = jest.fn().mockResolvedValue(null);
+      user.remove = jest.fn();
+      expect(service.deleteUserByToken(mocktokenDto)).rejects.toThrow(NotFoundException);
+    });
+  });
+
 });

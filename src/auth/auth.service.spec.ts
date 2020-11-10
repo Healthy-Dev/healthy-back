@@ -118,6 +118,68 @@ describe('AuthService', () => {
       expect(result).toEqual(mockAccessToken);
     });
   });
+
+  describe('signUpSocialLogin', () => {
+    let user;
+    let mockPassword;
+    let mockcreateUserDto: CreateUserDto;
+    let mockSalt;
+    beforeEach(async () => {
+      user = new User();
+      user.username = 'test';
+      user.password = 'EncryptedPassword';
+      mockPassword = 'Test123456';
+      mockcreateUserDto = {username: 'test', email: 'test@test.com', password: mockPassword};
+      mockSalt = 'salt';
+    });
+    it('returns the result from signIn as signUpSocialLogin is successfully', async () => {
+      const mockToken = 'token';
+      const mockAccessToken = {accessToken: mockToken};
+      Object.defineProperty(bcrypt, 'genSalt', {value: jest.fn().mockResolvedValue(mockSalt)});
+      Object.defineProperty(bcrypt, 'hash', {value: jest.fn().mockResolvedValue('passwordHash')});
+      usersService.createUser.mockResolvedValue({id: 9999});
+      authService.sendSignUpInfoEmail = jest.fn();
+      authService.signIn = jest.fn().mockResolvedValue(mockAccessToken);
+      const loggerError = Logger.prototype.error = jest.fn();
+      const result = await authService.signUpSocialLogin(mockcreateUserDto);
+      expect(bcrypt.genSalt).toHaveBeenCalledTimes(1);
+      expect(bcrypt.hash).toHaveBeenCalledWith(mockPassword, mockSalt);
+      expect(usersService.createUser).toHaveBeenCalledWith(mockcreateUserDto, true);
+      expect(authService.sendSignUpInfoEmail).toHaveBeenCalledWith(mockcreateUserDto.username, mockcreateUserDto.email);
+      expect(authService.signIn).toHaveBeenCalledWith({ usernameOrEmail: mockcreateUserDto.username, password: mockPassword });
+      expect(loggerError).not.toHaveBeenCalled();
+      expect(result).toEqual(mockToken);
+    });
+    it('throws an error as not create user', () => {
+      Object.defineProperty(bcrypt, 'genSalt', {value: jest.fn().mockResolvedValue(mockSalt)});
+      Object.defineProperty(bcrypt, 'hash', {value: jest.fn().mockResolvedValue('passwordHash')});
+      usersService.createUser.mockResolvedValue(null);
+      authService.sendSignUpInfoEmail = jest.fn();
+      authService.signIn = jest.fn();
+      expect(authService.signUpSocialLogin(mockcreateUserDto)).rejects.toThrow(InternalServerErrorException);
+    });
+    it('returns the result from signIn as signUp is successfullly, but the email information not been sent', async () => {
+      const mockToken = 'token';
+      const mockAccessToken = {accessToken: mockToken};
+      Object.defineProperty(bcrypt, 'genSalt', {value: jest.fn().mockResolvedValue(mockSalt)});
+      Object.defineProperty(bcrypt, 'hash', {value: jest.fn().mockResolvedValue('passwordHash')});
+      usersService.createUser.mockResolvedValue({id: 9999});
+      authService.sendSignUpInfoEmail = jest.fn().mockImplementation(() => {
+        throw new Error();
+      });
+      const logger = Logger.prototype.error = jest.fn();
+      authService.signIn = jest.fn().mockResolvedValue(mockAccessToken);
+      const result = await authService.signUpSocialLogin(mockcreateUserDto);
+      expect(bcrypt.genSalt).toHaveBeenCalledTimes(1);
+      expect(bcrypt.hash).toHaveBeenCalledWith(mockPassword, mockSalt);
+      expect(usersService.createUser).toHaveBeenCalledWith(mockcreateUserDto, true);
+      expect(authService.sendSignUpInfoEmail).toHaveBeenCalledWith(mockcreateUserDto.username, mockcreateUserDto.email);
+      expect(logger).toHaveBeenCalledTimes(1);
+      expect(authService.signIn).toHaveBeenCalledWith({ usernameOrEmail: mockcreateUserDto.username, password: mockPassword });
+      expect(result).toEqual(mockToken);
+    });
+  });
+
   describe('resendVerificationAccount', () => {
     let user;
     let mockemailDto: EmailDto;
@@ -250,7 +312,6 @@ describe('AuthService', () => {
       user.save = jest.fn();
       expect(authService.verifyAccount(mocktokenDto)).rejects.toThrow(ConflictException);
     });
-
   });
 
   describe('sign in', () => {
@@ -271,7 +332,7 @@ describe('AuthService', () => {
       expect(authService.signIn(mockAuthCredentialsDto)).rejects.toThrow(UnauthorizedException);
     });
   });
- 
+
   describe('validateUserPassword', () => {
     let user;
     beforeEach(async () => {
