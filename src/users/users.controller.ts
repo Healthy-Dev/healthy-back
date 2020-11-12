@@ -35,7 +35,7 @@ export class UsersController {
   }
 
   @Delete('v1/users/')
-  async deleteUserByToken(@Query(ValidationPipe) tokenDto: TokenDto): Promise<{ message: string }>{
+  async deleteUserByToken(@Query() tokenDto: TokenDto): Promise<{ message: string }>{
       return this.userService.deleteUserByToken(tokenDto);
   }
 
@@ -43,11 +43,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   async updateUser(
     @GetUser() { username }: User,
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    )
+    @Body()
     updateData: UpdateUserDto,
   ): Promise<{ message: string }> {
     if (Object.keys(updateData).length === 0) {
