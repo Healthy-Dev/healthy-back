@@ -29,37 +29,33 @@ export class AuthController {
 
   @Post('v1/auth/signup')
   async singUp(
-    @Body(ValidationPipe) createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signUp(createUserDto);
   }
 
   @Post('v1/auth/verify/')
-  async verifyAccount(@Query(ValidationPipe) tokenDto: TokenDto): Promise<{ message: string }> {
+  async verifyAccount(@Query() tokenDto: TokenDto): Promise<{ message: string }> {
     return this.authService.verifyAccount(tokenDto);
   }
 
   @Get('/v1/auth/resend-verification/:email')
   async resendVerificationAccount(
-    @Param(ValidationPipe) emailDto: EmailDto,
+    @Param() emailDto: EmailDto,
   ): Promise<{ message: string }> {
     return this.authService.resendVerificationAccount(emailDto);
   }
 
   @Get('/v1/auth/forgot-password/:email')
-  async forgotPassword(@Param(ValidationPipe) emailDto: EmailDto): Promise<{ message: string }> {
+  async forgotPassword(@Param() emailDto: EmailDto): Promise<{ message: string }> {
     return this.authService.forgotPassword(emailDto);
   }
 
   @Post('v1/auth/reset-password')
   public async resetPassword(
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    )
+    @Body()
     newPassword: NewPasswordDto,
-    @Query(ValidationPipe) tokenDto: TokenDto,
+    @Query() tokenDto: TokenDto,
   ): Promise<{ message: string }> {
     return this.authService.resetPassword(newPassword, tokenDto);
   }
@@ -84,11 +80,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   public async changePassword(
     @GetUser() { username }: User,
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    )
+    @Body()
     newPassword: NewPasswordDto,
   ): Promise<{ message: string }> {
     return this.authService.changePassword(newPassword, username);

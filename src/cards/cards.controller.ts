@@ -34,7 +34,7 @@ export class CardsController {
   ) {}
 
   @Get('v1/cards')
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes()
   getCards(@Query() filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return this.cardsService.getCards(filterDto);
   }
@@ -50,7 +50,7 @@ export class CardsController {
   }
 
   @Post('v1/cards')
-  @UsePipes(ValidationPipe)
+  @UsePipes()
   @UseGuards(AuthGuard())
   createCard(
     @Body() createCardsDto: CreateCardDto,
@@ -60,11 +60,7 @@ export class CardsController {
   }
 
   @Put('v1/cards/:id')
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  @UsePipes()
   @UseGuards(AuthGuard())
   updateCard(
     @Body() updateCardDto: UpdateCardDto,
@@ -80,7 +76,7 @@ export class CardsController {
   }
 
   @Delete('v1/cards/:id')
-  @UsePipes(ValidationPipe)
+  @UsePipes()
   @UseGuards(AuthGuard())
   deleteCard(
     @GetUser(new UserActiveValidationPipe()) user: User,
