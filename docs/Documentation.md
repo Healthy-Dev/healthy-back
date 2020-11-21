@@ -685,9 +685,6 @@ fetch(
     “https://healthydev.herokuapp.com/v1/auth/facebook,
     {
         method: GET,
-        headers:{
-                'Content-Type': 'application/json',
-        },
     },
 )
 .then(“// Manejo de Respuesta”);
@@ -708,9 +705,6 @@ fetch(
     “https://healthydev.herokuapp.com/v1/auth/google,
     {
         method: GET,
-        headers:{
-                'Content-Type': 'application/json',
-        },
     },
 )
 .then(“// Manejo de Respuesta”);
