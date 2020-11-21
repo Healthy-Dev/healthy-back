@@ -682,7 +682,7 @@ Redireccionara a una screen del frontend con el token como parametro
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/facebook/redirect”,
+    “https://healthydev.herokuapp.com/v1/auth/facebook,
     {
         method: GET,
         headers:{
@@ -705,7 +705,7 @@ Redireccionara a una screen del frontend con el token como parametro
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/google/auth,
+    “https://healthydev.herokuapp.com/v1/auth/google,
     {
         method: GET,
         headers:{
