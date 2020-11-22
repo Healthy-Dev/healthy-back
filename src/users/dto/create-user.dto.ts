@@ -1,4 +1,4 @@
-import { Length, IsString, Matches, IsEmail, IsAlphanumeric } from 'class-validator';
+import { Length, IsString, Matches, IsEmail } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'Healthy Dev te pide que ingreses un email válido' })
