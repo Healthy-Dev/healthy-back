@@ -6,7 +6,7 @@ export class CreateUserDto {
 
   @IsString({ message: 'Healthy Dev te pide que ingreses texto en el nombre de usuario.' })
   @Matches(/^[a-z]+[a-z0-9]+([.][a-z0-9]+)?$/, {
-    message: 'Healthy Dev te pide que comiences con letras(a-z), puede contener letras, números (0-9) y un punto(.) en medio en el nombre de usuario',
+    message: 'Healthy Dev te pide que comiences con una letra(a-z), puede contener letras, números (0-9) y un punto(.) en medio en el nombre de usuario',
   })
   @Length(4, 20, {
     message: 'Healthy Dev te pide que nombre de usuario posea entre 4 y 20 caracteres',

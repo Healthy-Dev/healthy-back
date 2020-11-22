@@ -364,7 +364,7 @@ Registra un nuevo usuario
 
 ```bash
 {
-    username: nombre de usuario (Obligatorio - 4 a 20 caracteres - sin espacios ni “@”),
+    username: nombre de usuario (Obligatorio - 4 a 20 caracteres - comienza con una letra(a-z), puede contener letras, números (0-9) y un punto(.) en medio)
     email: email asociado a cuenta (Obligatorio - formato de email válido),
     password: contraseña (Obligatorio - al menos una mayúscula, una minúscula y un número, sin espacios -  8 a 250 caracteres),
 }
@@ -702,7 +702,6 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-
 ### GET “{{URL}}/v1/auth/facebook
 
 Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook y luego a una screen del frontend con el token como parametro
@@ -725,6 +724,7 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
+
 ### GET “{{URL}}/v1/auth/forgot-password/:email”
 
 Envio de email crear nueva contraseña usuario.
@@ -742,6 +742,7 @@ Envio de email crear nueva contraseña usuario.
     message: “Healthy Dev le informa que se ha enviado el email para crear nueva contraseña correctamente”
 }
 ```
+
 **Ejemplo:**
 
 ```bash
@@ -806,6 +807,7 @@ Cambiar contraseña de usuario solicitada por email
     message: “Contraseña Cambiada con éxito.”
 }
 ```
+
 **Ejemplo:**
 
 ```bash
@@ -826,5 +828,3 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
-
-    
