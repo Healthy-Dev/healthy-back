@@ -34,7 +34,7 @@ export class CardsController {
   ) {}
 
   @Get('v1/cards')
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes()
   getCards(@Query() filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
     return this.cardsService.getCards(filterDto);
   }
@@ -50,23 +50,19 @@ export class CardsController {
   }
 
   @Post('v1/cards')
-  @UsePipes(ValidationPipe)
+  @UsePipes()
   @UseGuards(AuthGuard())
-  createCards(
+  createCard(
     @Body() createCardsDto: CreateCardDto,
     @GetUser(new UserActiveValidationPipe()) user: User,
   ): Promise<{ id: number }> {
-    return this.cardsService.createCards(createCardsDto, user);
+    return this.cardsService.createCard(createCardsDto, user);
   }
 
   @Put('v1/cards/:id')
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  @UsePipes()
   @UseGuards(AuthGuard())
-  updateCards(
+  updateCard(
     @Body() updateCardDto: UpdateCardDto,
     @GetUser(new UserActiveValidationPipe()) user: User,
     @Param('id', ParseIntPipe) id: number,
@@ -76,11 +72,11 @@ export class CardsController {
         'Debe modificar al menos alguno de los campos, titulo, descripcion, imagen, link o categoría.',
       );
     }
-    return this.cardsService.updateCards(updateCardDto, user, id);
+    return this.cardsService.updateCard(updateCardDto, user, id);
   }
 
   @Delete('v1/cards/:id')
-  @UsePipes(ValidationPipe)
+  @UsePipes()
   @UseGuards(AuthGuard())
   deleteCard(
     @GetUser(new UserActiveValidationPipe()) user: User,

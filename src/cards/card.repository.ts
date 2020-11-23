@@ -7,13 +7,14 @@ import { User } from '../users/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardCategory } from '../card-categories/card-category.entity';
+import { CardExpand } from './card-expand';
 
 @EntityRepository(Card)
 export class CardRepository extends Repository<Card> {
   getCards(filterDto: GetCardsFilterDto): Promise<CardPreviewDto[]> {
-    const { offset, limit, search, creatorId, categoryId } = filterDto;
+    const { offset, limit, search, creatorId, categoryId, expand } = filterDto;
     const query = this.createQueryBuilder('card');
-    query.select('card.id, card.title, card.photo');
+    query.select(['card.id', 'card.title', 'card.photo']);
     if (search) {
       query.where(
         new Brackets(sqb => {
@@ -33,15 +34,25 @@ export class CardRepository extends Repository<Card> {
       query.leftJoin('card.creator', 'user');
       query.andWhere('user.id = :creatorId', { creatorId });
     }
-
+    if (expand && expand.includes(CardExpand.CATEGORY)) {
+      query.leftJoinAndSelect('card.category', 'categories');
+    }
+    if (expand && expand.includes(CardExpand.CREATOR)) {
+      query.addSelect(['user_creator.id', 'user_creator.name', 'user_creator.profilePhoto']);
+      query.leftJoin('card.creator', 'user_creator');
+    }
+    if (expand && expand.includes(CardExpand.LIKES)) {
+      query.addSelect(['user_like.id', 'user_like.username']);
+      query.leftJoin('card.likesBy', 'user_like');
+    }
     query.orderBy('card.id', 'DESC');
     query.offset(offset);
     query.limit(limit);
-    const headerCards: Promise<CardPreviewDto[]> = query.getRawMany();
+    const headerCards: Promise<CardPreviewDto[]> = query.getMany();
     return headerCards;
   }
 
-  async createCards(
+  async createCard(
     createCardDto: CreateCardDto,
     user: User,
     photoUrl: string,
@@ -76,7 +87,7 @@ export class CardRepository extends Repository<Card> {
     return card;
   }
 
-  async updateCards(
+  async updateCard(
     updateCardDto: UpdateCardDto,
     id: number,
     user: User,

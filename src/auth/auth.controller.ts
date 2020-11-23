@@ -7,8 +7,8 @@ import {
   Get,
   Req,
   Query,
-  HttpStatus,
   Res,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -29,21 +29,35 @@ export class AuthController {
 
   @Post('v1/auth/signup')
   async singUp(
-    @Body(ValidationPipe) createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string }> {
     return this.authService.signUp(createUserDto);
   }
 
   @Post('v1/auth/verify/')
-  async verifyAccount(@Query(ValidationPipe) query: TokenDto): Promise<{ message: string }> {
-    return this.authService.verifyAccount(query.token);
+  async verifyAccount(@Query() tokenDto: TokenDto): Promise<{ message: string }> {
+    return this.authService.verifyAccount(tokenDto);
   }
 
-  @Get('/v1/auth/resend-verification/')
+  @Get('/v1/auth/resend-verification/:email')
   async resendVerificationAccount(
-    @Body(ValidationPipe) emailDto: EmailDto,
+    @Param() emailDto: EmailDto,
   ): Promise<{ message: string }> {
-    return this.authService.resendVerificationAccount(emailDto.email);
+    return this.authService.resendVerificationAccount(emailDto);
+  }
+
+  @Get('/v1/auth/forgot-password/:email')
+  async forgotPassword(@Param() emailDto: EmailDto): Promise<{ message: string }> {
+    return this.authService.forgotPassword(emailDto);
+  }
+
+  @Post('v1/auth/reset-password')
+  public async resetPassword(
+    @Body()
+    newPassword: NewPasswordDto,
+    @Query() tokenDto: TokenDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resetPassword(newPassword, tokenDto);
   }
 
   @Post('v1/auth/signin')
@@ -66,11 +80,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   public async changePassword(
     @GetUser() { username }: User,
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    )
+    @Body()
     newPassword: NewPasswordDto,
   ): Promise<{ message: string }> {
     return this.authService.changePassword(newPassword, username);

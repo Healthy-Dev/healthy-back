@@ -13,6 +13,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { NewPasswordDto } from '../auth/dto/new-password.dto';
 import { UserPreviewDto } from './dto/user-preview.dto';
 import { ImageManagementService } from '../image-management/image-management.service';
+import { TokenDto } from '../auth/dto/token.dto';
+import { TokenPayload } from '../tokens/dto/token-payload.dto';
+import { TokensService } from '../tokens/tokens.service';
+import { TokenType } from '../tokens/token-type.enum';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +25,7 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: UserRepository,
     private imageManagementService: ImageManagementService,
+    private readonly tokensService: TokensService,
   ) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -101,5 +106,31 @@ export class UsersService {
     username: string,
   ): Promise<{ message: string }> {
     return this.userRepository.changePassword(newPassword, username);
+  }
+
+  async deleteUserByToken(
+    tokenDto: TokenDto,
+  ): Promise<{ message: string }> {
+    const messageTokenInvalid = 'Healthy Dev le informa que no ha podido eliminar cuenta, token no valido';
+    let tokenPayload: TokenPayload;
+    try {
+      tokenPayload = await this.tokensService.verifyEncryptedToken(tokenDto.token);
+    } catch (error) {
+      throw new UnauthorizedException(messageTokenInvalid);
+    }
+    if (tokenPayload.type !== TokenType.DELETE_USER) {
+      throw new UnauthorizedException(messageTokenInvalid);
+    }
+    const user = await this.getUserByEmail(tokenPayload.email);
+    if (!user) {
+      throw new NotFoundException('Healthy Dev no encontró un usuario registrado con ese email');
+    }
+    try {
+      user.remove();
+    } catch (error) {
+      this.logger.error(`Failed to delete user ${user.id}`);
+      throw new InternalServerErrorException('Healthy Dev no pudo eliminar cuenta, intentelo nuevamente');
+    }
+    return {message: 'Healthy Dev le informa que el usuario ha sido eliminado'};
   }
 }

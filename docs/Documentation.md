@@ -18,6 +18,8 @@ Muestra por defecto las últimas 15 cards creadas.
 
     - search: texto para buscar cards que contenga en title o description la cadena enviada (Opcional)
 
+    - expand: listado de posibles expansiones del recurso separados por coma (Opcional, posibles valores: category,creator,likes)
+
         Nota: Considerando paginación o infinite scroll, definimos de cuantos registros queremos solicitar (limit por defecto 15) y tenemos un número de página (page), entonces el offset =  page * limit, si se inicia desde nroPagina = 0.
 
 **Respuesta:**
@@ -32,11 +34,13 @@ Array de objetos, donde cada objeto devuelve:
 }
 ```
 
+    Nota: Si incluye expand en los parámetros, incluira la expansión solicitada
+
 **Ejemplo:**
 
 ```bash
 fetch(
-      “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST”,
+      “https://healthydev.herokuapp.com/v1/cards?offset=2&limit=50&search=TEST&expand=creator,likes”,
       {
         method: “GET”,
       },
@@ -398,17 +402,15 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
-### GET “{{URL}}/v1/auth/resend-verification”
+### GET “{{URL}}/v1/auth/resend-verification/:email”
 
 Reenvio de email de verificación de cuenta para activar usuario.
 
-**Body:**
+**Parámetros:**
 
-```bash
-{
-    email: email asociado a cuenta (Obligatorio - formato de email válido),
-}
-```
+    Enviado por URL
+
+    - email: email asociado a cuenta (Obligatorio - formato de email válido),
 
 **Respuesta:**
 
@@ -422,17 +424,12 @@ Reenvio de email de verificación de cuenta para activar usuario.
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/auth/resend-verification”,
+    “https://healthydev.herokuapp.com/v1/auth/resend-verification/juanperez@gmail.com”,
     {
         method: “GET”,
         headers:{
                 'Content-Type': 'application/json',
         },
-        body: JSON.stringify(
-            {
-                “email”: “juanperez@gmail.com“
-            }
-        )
     },
 )
 .then(“// Manejo de Respuesta”);
@@ -629,9 +626,44 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
+### DELETE “{{URL}}/v1/users/”
+
+Eliminación de cuenta por opción de verificación de cuenta de email para activar usuario.
+
+**Parámetros:**
+
+    Enviados por URL
+
+    - token: token encriptado previamente enviado por email para activar usuario en caso de que no lo hubiera solicitado (Obligatorio)
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que el usuario ha sido eliminado”
+}
+```
+
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/users/?token=xxxxxxxxxxxxxxxx”,
+    {
+        method: “DELETE”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
+
 ### POST “{{URL}}/v1/auth/new-password”
 
 Cambiar contraseña de usuario actual
+
+    Nota: El cambio de contraseña invalidará todos los tokens generados previos al cambio.
 
 **Body:**
 
@@ -670,6 +702,7 @@ fetch(
 .then(“// Manejo de Respuesta”);
 ```
 
+
 ### GET “{{URL}}/v1/auth/facebook
 
 Login con facebok, al llamar a esta url se redireccionara a facebook para loguearse con la cuenta de facebook y luego a una screen del frontend con el token como parametro
@@ -689,6 +722,37 @@ fetch(
 )
 .then(“// Manejo de Respuesta”);
 ```
+### GET “{{URL}}/v1/auth/forgot-password/:email”
+
+Envio de email crear nueva contraseña usuario.
+
+**Parámetros:**
+
+    Enviado por URL
+
+    - email: email asociado a cuenta (Obligatorio - formato de email válido),
+
+**Respuesta:**
+
+```bash
+{
+    message: “Healthy Dev le informa que se ha enviado el email para crear nueva contraseña correctamente”
+}
+```
+**Ejemplo:**
+
+```bash
+fetch(
+    “https://healthydev.herokuapp.com/v1/auth/forgot-password/juanperez@gmail.com”,
+    {
+        method: “GET”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+    },
+)
+.then(“// Manejo de Respuesta”);
+```
 
 ### GET “{{URL}}/v1/auth/google
 
@@ -702,10 +766,63 @@ Redireccionara a una screen del frontend con el token como parametro
 
 ```bash
 fetch(
-    “https://healthydev.herokuapp.com/v1/auth/google,
+    “https://healthydev.herokuapp.com/v1/auth/google”,
     {
         method: GET,
+        headers:{
+            'Content-Type': 'application/json',
+        },
     },
 )
 .then(“// Manejo de Respuesta”);
 ```
+
+### POST “{{URL}}/v1/auth/reset-password”
+
+Cambiar contraseña de usuario solicitada por email
+
+    Nota: El cambio de contraseña invalidará todos los tokens generados previos al cambio.
+
+**Body:**
+
+```bash
+{
+    password: contraseña (Obligatorio - al menos una mayúscula, una minúscula y un número, sin espacios - 8 a 250 caracteres),
+}
+```
+
+**Parámetros:**
+
+    Enviados por URL
+
+    - token: token encriptado previamente enviado por email para crear nueva contraseña (Obligatorio)
+
+**Respuesta:**
+
+```bash
+{
+    message: “Contraseña Cambiada con éxito.”
+}
+```
+**Ejemplo:**
+
+```bash
+fetch(
+
+    “https://healthydev.herokuapp.com/v1/auth/reset-password/?token=xxxxxxxxxxxxxxxx”,
+    {
+        method: “POST”,
+        headers:{
+                'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+            “password”: “SuperPass21“
+            }
+        )
+     },
+)
+.then(“// Manejo de Respuesta”);
+```
+
+    

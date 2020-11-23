@@ -34,7 +34,7 @@ export class CardsService {
     return this.cardRepository.getCardById(id);
   }
 
-  async createCards(createCardsDto: CreateCardDto, user: User): Promise<{ id: number }> {
+  async createCard(createCardsDto: CreateCardDto, user: User): Promise<{ id: number }> {
     const { photo, categoryId } = createCardsDto;
     const cardCategory = await this.cardCategoriesService.getCardCategoryById(categoryId);
     if (!cardCategory) {
@@ -42,12 +42,18 @@ export class CardsService {
     }
     let photoUrl = this.imageManagementService.placeholderCardUrl;
     if (photo) {
-      photoUrl = await this.imageManagementService.uploadImage(photo);
+      try {
+        photoUrl = await this.imageManagementService.uploadImage(photo);
+      } catch (error) {
+        throw new InternalServerErrorException(
+          'Healthy Dev no pudo guardar la imagen y cancelo creación.',
+        );
+      }
     }
-    return this.cardRepository.createCards(createCardsDto, user, photoUrl, cardCategory);
+    return this.cardRepository.createCard(createCardsDto, user, photoUrl, cardCategory);
   }
 
-  async updateCards(updateCardDto: UpdateCardDto, user: User, id: number): Promise<Card> {
+  async updateCard(updateCardDto: UpdateCardDto, user: User, id: number): Promise<Card> {
     const { categoryId } = updateCardDto;
     let cardCategory = {} as CardCategory;
     if (categoryId) {
@@ -78,7 +84,7 @@ export class CardsService {
         }
       }
     }
-    return this.cardRepository.updateCards(updateCardDto, id, user, cardCategory);
+    return this.cardRepository.updateCard(updateCardDto, id, user, cardCategory);
   }
 
   async deleteCard(user: User, id: number): Promise<{ message: string }> {

@@ -55,6 +55,9 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ nullable: true })
+  passwordChangedAt: Date;
+
   @ManyToMany(
     type => Card,
     card => card.likesBy

@@ -8,6 +8,8 @@ import {
   ParseIntPipe,
   Param,
   BadRequestException,
+  Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetUser } from '../auth/get-user.decorator';
@@ -15,6 +17,7 @@ import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserPreviewDto } from './dto/user-preview.dto';
+import { TokenDto } from '../auth/dto/token.dto';
 
 @Controller()
 export class UsersController {
@@ -31,15 +34,16 @@ export class UsersController {
     return this.userService.getUserById(id);
   }
 
+  @Delete('v1/users/')
+  async deleteUserByToken(@Query() tokenDto: TokenDto): Promise<{ message: string }>{
+      return this.userService.deleteUserByToken(tokenDto);
+  }
+
   @Put('v1/users/me')
   @UseGuards(AuthGuard('jwt'))
   async updateUser(
     @GetUser() { username }: User,
-    @Body(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    )
+    @Body()
     updateData: UpdateUserDto,
   ): Promise<{ message: string }> {
     if (Object.keys(updateData).length === 0) {
