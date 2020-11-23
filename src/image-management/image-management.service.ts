@@ -20,9 +20,9 @@ export class ImageManagementService {
     background: backgroundCrop,
   };
   readonly placeholderUserUrl =
-    'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
+    'https://res.cloudinary.com/du7xgj6ms/image/upload/v1605986953/UserPlaceHolder_sgvgm4.png';
   readonly placeholderCardUrl =
-    'http://res.cloudinary.com/du7xgj6ms/image/upload/v1589734759/placeholder.jpg';
+    'https://res.cloudinary.com/du7xgj6ms/image/upload/v1605986953/CardPlaceHolder_qgia0x.png';
 
   readonly placeholdersImagesUrl = [this.placeholderCardUrl, this.placeholderUserUrl];
 
