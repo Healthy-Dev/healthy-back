@@ -364,7 +364,7 @@ Registra un nuevo usuario
 
 ```bash
 {
-    username: nombre de usuario (Obligatorio - 4 a 20 caracteres - comienza con una letra(a-z), puede contener letras, números (0-9) y un punto(.) en medio)
+    username: nombre de usuario (Obligatorio - 4 a 20 caracteres - comienza con una letra, puede contener letras y números, y punto, guion medio, guion bajo en medio.)
     email: email asociado a cuenta (Obligatorio - formato de email válido),
     password: contraseña (Obligatorio - al menos una mayúscula, una minúscula y un número, sin espacios -  8 a 250 caracteres),
 }
