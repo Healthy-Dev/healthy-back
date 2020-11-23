@@ -5,11 +5,8 @@ export class CreateUserDto {
   email: string;
 
   @IsString({ message: 'Healthy Dev te pide que ingreses texto en el nombre de usuario.' })
-  @Length(4, 20, {
-    message: 'Healthy Dev te pide que nombre de usuario posea entre 4 y 20 caracteres',
-  })
-  @Matches(/^((?![\s@]).)*$/, {
-    message: 'Healthy Dev te pide que el nombre de usuario no posea "@" ni espacios',
+  @Matches(/(?=^.{4,20}$)^[a-zA-Z]+[a-zA-Z\-\_0-9.]+[a-zA-Z0-9]+$/, {
+    message: 'Healthy Dev te pide que comiences con una letra, puede contener letras y números, y punto, guion medio, guion bajo en medio, en el nombre de usuario. Largo de 4 a 20.',
   })
   username: string;
 
